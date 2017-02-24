@@ -852,6 +852,7 @@ void RootPlotter::PlotHistos(const char* psfilename)
 	leg->SetTextFont(42);
 	leg->SetFillStyle(0);
 	for (Int_t i=0; i<fNumOfSamples; ++i){
+	  cout<<i<<endl;
 	  TString legname = TString::Format("leg_entry_%i",i);
 	  TString legtitle = ((TObjString*) fSampleNames->At(i))->GetName(); 
 	  legtitle.ReplaceAll("SPACE", " ");
@@ -1364,7 +1365,7 @@ void RootPlotter::Cosmetics(TH1* hist, Int_t isample)
   } 
   else {
     
-    hist->GetYaxis()->SetTitleSize(0.07);
+    hist->GetYaxis()->SetTitleSize(0.06);
     hist->GetYaxis()->SetLabelSize(0.06);
     //hist->GetYaxis()->SetNdivisions(1005);
     hist->GetYaxis()->SetTitleFont(42);

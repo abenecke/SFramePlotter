@@ -69,6 +69,8 @@ class SHist : public TObject
   void SetAsymmErrors(TGraphAsymmErrors* as);
   TGraphAsymmErrors* GetAsymmErrors();
 
+  void Rebin();
+
  private:
   TH1* m_hist;
   THStack* m_stack;

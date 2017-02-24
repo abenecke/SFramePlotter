@@ -360,10 +360,12 @@ void FileParser::MakeCumulativeHist(TH1* hist)
 
 
 TH1* FileParser::Rebin(TH1* hist, TString dirname)
-{						
+{		
+  				
   TString name(hist->GetName());
   TString title(hist->GetTitle());
-  //cout << "name = " << name << " title = " << title << endl;
+  
+  //  cout << "name = " << name << " title = " << title << endl;
   if (name.CompareTo("toptags")==0){// && dirname.Contains("cutflow6") && title.Contains("electron")){
    
     Double_t binsx[] = {0, 960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1860, 1920, 1980, 2040, 2100, 2400, 3000};
@@ -407,8 +409,55 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     TH1* rebinned = hist->Rebin(4);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
+  } else if (title.Contains("p_{T} muon")) {
 
+    TH1* rebinned = hist->Rebin(2);
+    if(dirname.Contains("twodcut")) rebinned = hist->Rebin(2);
+    return rebinned;
 
+  } else if (title.Contains("p_{T} second jet")) {
+
+    TH1* rebinned = hist->Rebin(1);
+    if(dirname.Contains("twodcut"))  rebinned = hist->Rebin(2);
+    rebinned->GetXaxis()->SetRangeUser(0,600);
+    if(dirname.Contains("chi2cut_btag")) rebinned->GetXaxis()->SetRangeUser(0,400);
+    return rebinned; 
+  }else if (title.Contains("p_{T} first jet")) {
+
+    TH1* rebinned = hist->Rebin(1);
+    if(dirname.Contains("chi2cut_btag")) rebinned->GetXaxis()->SetRangeUser(0,700);
+    return rebinned; 
+  } else if (title.Contains("p_{T} topjet")) {
+
+    TH1* rebinned = hist->Rebin(1);
+    if(dirname.Contains("chi2cut_W")) rebinned->GetXaxis()->SetRangeUser(0,1100);
+    return rebinned; 
+  }else if (title.Contains("p_{T} jet")) {
+
+    TH1* rebinned = hist->Rebin(1);
+    if(dirname.Contains("twodcut"))  rebinned = hist->Rebin(2);
+    return rebinned; 
+
+    // }  else if (!(title.CompareTo("M_{ZPrime}^{rec} [GeV/c^{2}]"))) {
+ 
+    // TH1* rebinned = hist->Rebin(2);
+    // return rebinned;
+}  else if (!(title.CompareTo("M_{TPrime}^{rec} [GeV/c^{2}]"))) {
+ 
+     TH1* rebinned = hist->Rebin(2);
+     return rebinned;
+  } else if (title.Contains("number of jets")) {
+    
+    hist->GetXaxis()->SetRangeUser(0,10);
+    if(dirname.Contains("twodcut")) hist->GetXaxis()->SetRangeUser(0,30);
+    return hist;
+
+  } else if (!title.CompareTo("#Chi^{2}")) {
+    
+    TH1* rebinned = hist->Rebin(2);
+    return rebinned;
+    
+   
 
   } else {
     return NULL;

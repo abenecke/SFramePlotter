@@ -1,0 +1,44 @@
+SteerPlotter(){
+  
+  // steering for the plotter
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/opt/Eff";        // name of the cycle (first part of the name of the root files)
+  fInputFiles    = " root,    ";   // name of the input files (second part)
+  fSampleNames   = " M_ZPrime=1500GeV(Ht),";  	     // name of chains to be plotted
+  fSamplesWeight = " 1.0,  ";              // weights applied to the samples (same order as in fInputFiles)
+  fSamplesUnc    = " 0.0,  ";              // weights applied to the samples (same order as in fInputFiles)
+  fHistColors    = " 4,    ";                // the colors of the histograms, negative numbers mean no filling
+  fHistMarkers   = " 0,    ";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+
+  //fSamplesToStack = "QCD , ST , TTbar , WJets , ZJets"; // the names of chains which you would like to stack (same as in input filenames)
+
+  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/pictures/opt/Eff.ps";
+  
+  bRatioPlot = false;   // plot ratio histograms?
+  bDrawLumi = false;
+  bShapeNorm = false;   // shape normalization? 
+  bPortrait = true;    // portrait or landscape?
+  bDrawEntries = false; // draw the histogram entries?
+  bFitPtBalanceHists = false; // perform fit of pt-balance histograms?
+  bJetShapesPerSlice = false; // Plot JetShapes also slice per slice in r
+  bSingleEPS = true;
+  bDrawLegend = true;
+  bLogy = flase;
+  fLumi = 66.2;
+  fSysError = 0.044;
+  bForPrelim = false;
+  bForPublication = false;
+}
+
+
+// Colors from ROOT:
+// num EColor { kWhite =0,   kBlack =1,   kGray=920
+//             ,kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432
+//             ,kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900};
+//
+// default QCD   = 867 -> lighter version of Azure
+// default ttbar = 810 -> dark version of Orange (rather red)
+
+//  fInputFiles    = "DATA.DATA.root, MC.TTbar*.root, MC.W*Jets.root,  MC.SingleTop*ch.root, MC.DY*.root, MC.ZP2000w200.root, MC.ZP2000w20.root "; // name of the input files (second part)
+// fSamplesToStack = "TTbar,  WJets, SingleTop, DY"; // the names of chains which you would like to stack (same as in input filenames)
+
+

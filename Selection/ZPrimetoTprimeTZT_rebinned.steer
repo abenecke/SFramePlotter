@@ -1,0 +1,79 @@
+SteerPlotter(){
+  
+  // steering for the plotter
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/Cleaning/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+ //fInputFiles    = " MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,  	MC.QCD*.root,    MC.WJets*.root, 	  MC.other*.root";
+ // fSampleNames   = " M_Z'=1.5TeV(Zt),	     		 M_Z'=2.0TeV(Zt),    	   	      M_Z'=2.5TeV(Zt), 	  		  ttbar, 	   	QCD,		W+Jets,        	  Others";
+//  fSamplesWeight = " 1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		      	1.0, 		1.0, 		  1.0";             
+//  fSamplesUnc    = " 0.0,       		     0.0,          		   0.0, 			  		  0.0, 		      	0.0, 		0.0, 		  0.0";              
+//  fHistColors    = " 416,       		     420,          		   414, 			  		  625, 		      	851, 		791, 		  920";                
+//  fHistMarkers   = " 0,         		     0,            		   0, 				  		  0, 		      	0,		0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+//fSamplesToStack = " TTbar ,other, QCD, WJets";
+
+
+  // steering for the plotter
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/divided/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+  fInputFiles    = "  MC.MC_ZPrime1500ToTPrime1200T_TPrimeToHT_rebinned.root,      MC.MC_ZPrime2000ToTPrime1200T_TPrimeToHT_rebinned.root,      MC.MC_ZPrime2500ToTPrime1200T_TPrimeToHT_rebinned.root,      MC.TTbar_rebinned.root,      MC.WJets_rebinned.root, 	  MC.other_rebinned.root";
+// fInputFiles    = "  MC.MC_ZPrime1500ToTPrime1200T_TPrimeToZT_rebinned.root,      MC.MC_ZPrime2000ToTPrime1200T_TPrimeToZT_rebinned.root,      MC.MC_ZPrime2500ToTPrime1200T_TPrimeToZT_rebinned.root,      MC.TTbar_rebinned.root,      MC.WJets_rebinned.root, 	  MC.other_rebinned.root";
+  fSampleNames   = "	Z'_(M_=_1.5TeV),	     		 Z'_(M_=_2.0TeV),    	   	      Z'_(M_=_2.5TeV), 	  		  ttbar, 		W+Jets,        	  Others";
+  fSamplesWeight = "	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     	1.0, 		  1.0";             
+  fSamplesUnc    = "	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       	0.0, 		  0.0";              
+ fHistColors    = " 	600,       		     432,          		   603, 			  		  625, 		       	791, 		  920";         
+   fHistColors    = " 	416,       		     420,          		   414, 			  		  625, 		       	791, 		  920";           
+  fHistMarkers   = " 	0,         		     0,            		   0, 				  		  0, 		     	0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+ fSamplesToStack = " TTbar_rebinned ,other_rebinned, WJets_rebinned";
+
+
+// steering for the plotter
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/eff/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+ // fInputFiles    = " Data.Data_rebinned.root,    MC.MC_ZPrime1500ToTPrime1200T_TPrimeToZT_rebinned.root,   MC.MC_ZPrime2000ToTPrime1200T_TPrimeToZT_rebinned.root,      MC.MC_ZPrime2500ToTPrime1200T_TPrimeToZT_rebinned.root,     MC.TTbar_rebinned.root,      MC.WJets_rebinned.root, 	  MC.other_rebinned.root";
+//  fSampleNames   = " Data,	M_Z'=1.5TeV(Zt),	     		 M_Z'=2.0TeV(Zt),    	   	      M_Z'=2.5TeV(Zt), 	  		  ttbar, 		W+Jets,        	  Others";
+//  fSamplesWeight = " 1.0,	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     	1.0, 		  1.0";             
+//  fSamplesUnc    = " 0.0,	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       	0.0, 		  0.0";              
+//  fHistColors    = " 1,		416,       		     420,          		   414, 			  		  625, 		       	791, 		  920";                
+//  fHistMarkers   = " 20,	0,         		     0,            		   0, 				  		  0, 		     	0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+// fSamplesToStack = "TTbar_rebinned ,other_rebinned, WJets_rebinned";
+
+// steering for the plotter
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/Leptoncleaning/CMSSW_7_6_3/hart/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+//  fInputFiles    = " Data.Data*.root, MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,   MC.QCD*.root,   MC.WJets*.root, 	  MC.other*.root";
+//  fSampleNames   = " Data,	M_Z'=1.5TeV(Zt),	     		 M_Z'=2.0TeV(Zt),    	   	      M_Z'=2.5TeV(Zt), 	  		  ttbar, 	QCD,	W+Jets,        	  Others";
+//  fSamplesWeight = " 1.0,	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     1.0,	1.0, 		  1.0";             
+//  fSamplesUnc    = " 0.0,	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       0.0,	0.0, 		  0.0";              
+//  fHistColors    = " 1,		416,       		     420,          		   414, 			  		  625, 		       	851,791, 		  920";                
+//  fHistMarkers   = " 20,	0,         		     0,            		   0, 				  		  0, 		     	0,0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+// fSamplesToStack = " TTbar ,other, WJets, QCD";
+ 
+ 
+
+  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/pictures/eff/rebinned/ZprimeToTprimeT_T1200_ZT_rebinned.ps";
+  
+  bRatioPlot = false;   // plot ratio histograms?
+  bDrawLumi = false;
+  bShapeNorm = false;   // shape normalization? 
+  bPortrait = true;    // portrait or landscape?
+  bDrawEntries = false; // draw the histogram entries?
+  bFitPtBalanceHists = false; // perform fit of pt-balance histograms?
+  bJetShapesPerSlice = false; // Plot JetShapes also slice per slice in r
+  bSingleEPS = true;
+  bDrawLegend = false;
+  bLogy = true;
+  fLumi = 2690.7 ;
+  fSysError = 0.044;
+  bForPrelim = false;
+  bForPublication = false;
+}
+
+
+// Colors from ROOT:
+// num EColor { kWhite =0,   kBlack =1,   kGray=920
+//             ,kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432
+//             ,kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900};
+//
+// default QCD   = 867 -> lighter version of Azure
+// default ttbar = 810 -> dark version of Orange (rather red)
+
+//  fInputFiles    = "DATA.DATA.root, MC.TTbar*.root, MC.W*Jets.root,  MC.SingleTop*ch.root, MC.DY*.root, MC.ZP2000w200.root, MC.ZP2000w20.root "; // name of the input files (second part)
+// fSamplesToStack = "TTbar,  WJets, SingleTop, DY"; // the names of chains which you would like to stack (same as in input filenames)
+
+

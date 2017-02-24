@@ -121,14 +121,15 @@ TString SHist::GetProcessName()
 void SHist::SetLegName(TString name)
 {
   m_leg_name = name;
-  m_leg_name.ReplaceAll("SPACE", " ");
+  // m_leg_name.ReplaceAll("SPACE", " ");
   m_leg_name.ReplaceAll("_", " ");
   m_leg_name.ReplaceAll("ttbar", "t#bar{t}");
   m_leg_name.ReplaceAll("~", ",");
   m_leg_name.ReplaceAll("[", "{");
   m_leg_name.ReplaceAll("]", "}");
-  m_leg_name.ReplaceAll("_", " ");
-  m_leg_name.ReplaceAll("ttbar", "t#bar{t}");
+  m_leg_name.ReplaceAll("rightarrow", "#rightarrow");
+  //  m_leg_name.ReplaceAll("_", " ");
+  // m_leg_name.ReplaceAll("ttbar", "t#bar{t}");
 }
 
 TString SHist::GetLegName()
@@ -359,4 +360,10 @@ void SHist::NormaliseToArea()
     }
   }
 
+}
+
+
+void SHist::Rebin(){
+  //  m_hist->Rebin(4);
+  //  m_hist->GetYaxis()->SetRangeUser(0,3800);
 }
