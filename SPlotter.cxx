@@ -598,7 +598,12 @@ void SPlotter::ProcessAndPlot(std::vector<TObjArray*> histarr)
     } else { // usual plots
       
       PlotHists(hists, ipad);
-      // draw a legend     
+      // draw a legend    
+      //TEST
+      TString title = hists.at(0)->GetDir();
+      TString name = hists.at(0)->GetName();
+      if(title.Contains("muon_twodcut")&&name.Contains("number"))bleg=true;
+      //
       if (bleg){
 	DrawLegend(GetHistsAtIndex(histarr, i));
 	if (!bDrawLegend) bleg = false;
@@ -1325,7 +1330,7 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   // cout<<m_ps_name<<endl;
   // if(title.Contains("tagged"))cout <<hists.at(0)->GetName()<<endl;
   float yfrac = 0.097;
-  if(title.Contains("jet_twodcut") && name.Contains("number")) yfrac = 0.08;
+  if((title.Contains("jet_twodcut")|| title.Contains("muon_twodcut")||title.Contains("topjet_chi2cut"))&& name.Contains("number")) yfrac = 0.08;
   if (!bPlotRatio) yfrac = 0.05;
   if(narr==12)  yfrac = 0.03;
   if(narr==13)   yfrac = 0.05;
@@ -1344,7 +1349,7 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   float ysize = yfrac*narr;
   float xleft = 0.8;
   if (bSingleEPS) xleft = 0.61;
-  if(title.Contains("jet_twodcut") && name.Contains("number")&&bSingleEPS) xleft = 0.61;
+  if((title.Contains("jet_twodcut")||title.Contains("muon_twodcut")||title.Contains("topjet_chi2cut")) && name.Contains("number")&&bSingleEPS) xleft = 0.61;
   if(narr==13)xleft=0.57;
   float xright = 0.97;
   if(title.Contains("higgs_notop_chi2min_chi2cut") && name.Contains("M_TPrime_rec")&&bSingleEPS){ xleft = 0.35;xright = 0.75;}
@@ -1488,13 +1493,14 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
  if(name.Contains("MZPrime_TPrime1200ZT_zwtop")|| name.Contains("MZPrime_TPrime1200HT_zwtop")|| name.Contains("MZPrime_TPrime1200WB_zwnotop")) if(bDrawLegend)  leg2->Draw();
  if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3")) if(bDrawLegend)  leg2->Draw();
  
-  TPaveText *pt = new TPaveText(.625,.03,.84,.13,"nbNDC");
+  TPaveText *pt = new TPaveText(.625,.06,.84,.16,"nbNDC");
   pt->SetFillColor(0);
   if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec"))pt = new TPaveText(.705,.595,.895,.685,"nbNDC");
   if(name.Contains("MZPrime_TPrime1200ZT_zwtop") || name.Contains("MZPrime_TPrime1200HT_zwtop")|| name.Contains("MZPrime_TPrime1200WB_zwnotop")) pt = new TPaveText(.705,.495,.895,.585,"nbNDC");
   if(title.Contains("higgs_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))pt = new TPaveText(.75,.6,.9,.65,"nbNDC");
   if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))pt = new TPaveText(.75,.6,.9,.65,"nbNDC");
-  if(title.Contains("jet_twodcut") && name.Contains("number"))pt = new TPaveText(.62,.13,.83,.23,"nbNDC");
+  if(title.Contains("jet_twodcut") && name.Contains("number"))pt = new TPaveText(.22,.77,.43,.87,"nbNDC");
+  if((title.Contains("topjet_twodcut")||title.Contains("muon_twodcut")) && name.Contains("number"))pt = new TPaveText(.625,.06,.84,.16,"nbNDC");
   if(m_ps_name.Contains("_ZT"))pt->AddText("T ' #rightarrow Z t");
   if(m_ps_name.Contains("_HT"))pt->AddText("T ' #rightarrow H t");
   if(m_ps_name.Contains("_WB"))pt->AddText("T ' #rightarrow W b");
@@ -1505,12 +1511,11 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   if(m_ps_name.Contains("_HT"))pt->SetFillColor(kCyan -7);
   if(m_ps_name.Contains("_WB"))pt->SetFillColor(606);
   if(m_ps_name.Contains("ZprimeToTprimeTZ1500T1200")) pt->SetFillColor(921);
-  //  if(bDrawLegend)  pt->Draw();
+  if(bDrawLegend)  pt->Draw();
 
   // TPaveText *pt = new TPaveText(.75,.5,.92,.6,"nbNDC");
   // pt->AddText("T ' #rightarrow H t");
   // pt->AddText("Z' (M = 1.5 TeV)");
-  // // pt->SetFillColor(kGreen -10);
   // pt->SetFillColor(kBlue -7);
   // if(bDrawLegend)  pt->Draw();
 
@@ -1523,6 +1528,7 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   ////////////////////////////////////////////
   if(title.Contains("tagged")){
     TPaveText *ptag = new TPaveText(.235,.8,.44,.9,"nbNDC");
+    if(title.Contains("higgs_"))ptag = new TPaveText(.55,.8,.7,.9,"nbNDC");
     ptag->AddText("tagged");
     ptag->SetFillColor(0);
     ptag->SetTextSize(0.08);
@@ -1659,6 +1665,7 @@ bool SPlotter::SetMinMax(vector<SHist*> hists)
   // set minimum and maximum of all histograms
   int narr = hists.size();
   TString name = hists[0]->GetName();
+  TString title =hists.at(0)->GetDir();
   double max = 0;
   double min = FLT_MAX;
   for (int i=0; i<narr; ++i){
@@ -1683,7 +1690,11 @@ bool SPlotter::SetMinMax(vector<SHist*> hists)
   if (name.Contains("_lxy") || name.Contains("_ly") || bPlotLogy ){
     islog = true;
     uscale = 12.;
-    if(bDrawLegend) uscale = 1500.;
+    if(bDrawLegend){
+      uscale = 1500.;
+      if(title.Contains("muon_twodcut") && name.Contains("number"))uscale=2;
+      if(title.Contains("topjet") && name.Contains("number"))uscale=12;
+    }
   }
 
   for (int i=0; i<narr; ++i){
