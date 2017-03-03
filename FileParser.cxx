@@ -365,7 +365,7 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
   TString name(hist->GetName());
   TString title(hist->GetTitle());
   
-  //  cout << "name = " << name << " title = " << title << endl;
+  // cout << "name = " << name << " title = " << title <<" dirname= "<<dirname<< endl;
   if (name.CompareTo("toptags")==0){// && dirname.Contains("cutflow6") && title.Contains("electron")){
    
     Double_t binsx[] = {0, 960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1860, 1920, 1980, 2040, 2100, 2400, 3000};
@@ -442,22 +442,41 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
  
     // TH1* rebinned = hist->Rebin(2);
     // return rebinned;
-}  else if (!(title.CompareTo("M_{TPrime}^{rec} [GeV/c^{2}]"))) {
+  }  else if (!(title.CompareTo("M_{TPrime}^{rec} [GeV/c^{2}]"))) {
  
-     TH1* rebinned = hist->Rebin(2);
-     return rebinned;
+    TH1* rebinned = hist->Rebin(2);
+    return rebinned;
   } else if (title.Contains("number of jets")) {
     
     hist->GetXaxis()->SetRangeUser(0,10);
     if(dirname.Contains("twodcut")) hist->GetXaxis()->SetRangeUser(0,30);
     return hist;
-
+  } else if (title.Contains("number of topjets")) {
+    
+    hist->GetXaxis()->SetRangeUser(0,15);
+    return hist;
+  } else if (dirname.Contains("higgs_topjet_chi2cut")&&name.Contains("mass_subjet_sum")) {
+    
+    hist->GetXaxis()->SetRangeUser(90,170);
+    return hist;
+  } else if (dirname.Contains("zw_topjet_chi2cut")&&name.Contains("mass_subjet_sum")) {
+    
+    hist->GetXaxis()->SetRangeUser(50,130);
+    return hist;
   } else if (!title.CompareTo("#Chi^{2}")) {
     
     TH1* rebinned = hist->Rebin(2);
     return rebinned;
     
-   
+  } else if (title.Contains("missing E")) {
+    
+    TH1* rebinned = hist->Rebin(4);
+    return rebinned;
+    
+  } else if (title.Contains("H_{T}")) {
+    
+    TH1* rebinned = hist->Rebin(2);
+    return rebinned;
 
   } else {
     return NULL;
