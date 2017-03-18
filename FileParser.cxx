@@ -409,12 +409,18 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     TH1* rebinned = hist->Rebin(4);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
     return rebinned;
-  } else if (title.Contains("p_{T} muon")) {
-
-    TH1* rebinned = hist->Rebin(2);
-    if(dirname.Contains("twodcut")) rebinned = hist->Rebin(2);
-    return rebinned;
-
+  // }   else if (title.Contains("p_{T} muon")) {
+    // if(dirname.Contains("twodcut")){
+    //   // Double_t bins[24]={0,53,73,93,113,133,153,173,193,213,233,253,273,293,313,333,353,373,393,413,433,453,473,493};
+    //   TH1* rebinned = hist->Rebin(23,"rebinned",bins);
+    //   return rebinned;
+    // }else{
+    // TH1* rebinned = hist->Rebin(2);
+    // return rebinned;
+      // }
+  }else if (title.Contains("eta muon")) {
+      TH1* rebinned = hist->Rebin(4);
+      return rebinned;
   } else if (title.Contains("p_{T} second jet")) {
 
     TH1* rebinned = hist->Rebin(1);
@@ -438,10 +444,10 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     if(dirname.Contains("twodcut"))  rebinned = hist->Rebin(2);
     return rebinned; 
 
-    // }  else if (!(title.CompareTo("M_{ZPrime}^{rec} [GeV/c^{2}]"))) {
+  }  else if (!(title.CompareTo("M_{ZPrime}^{rec} [GeV/c^{2}]"))) {
  
-    // TH1* rebinned = hist->Rebin(2);
-    // return rebinned;
+    TH1* rebinned = hist->Rebin(2);
+    return rebinned;
   }  else if (!(title.CompareTo("M_{TPrime}^{rec} [GeV/c^{2}]"))) {
  
     TH1* rebinned = hist->Rebin(2);
@@ -471,6 +477,19 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
   } else if (title.Contains("missing E")) {
     
     TH1* rebinned = hist->Rebin(4);
+    return rebinned;
+  } else if (dirname.Contains("topjet_twodcut") &&name.Contains("mass_subjet_sum")) {
+    
+    TH1* rebinned = hist->Rebin(4);
+    return rebinned;
+  } else if (dirname.Contains("topjet_chi2cut_other") &&name.Contains("mass_subjet_sum")) {
+    
+    TH1* rebinned = hist->Rebin(2);
+    return rebinned;
+
+  } else if (dirname.Contains("tagger_chi2cut")&&name.Contains("reco_mass_W")) {
+    
+    TH1* rebinned = hist->Rebin(2);
     return rebinned;
     
   } else if (title.Contains("H_{T}")) {

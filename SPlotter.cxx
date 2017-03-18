@@ -1366,7 +1366,8 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   if((title.Contains("twodcut")||title.Contains("chi2cut"))&&name.Contains("number"))leg = new TLegend(xleft,top-ysize+0.07,xright,top+0.07, NULL,"brNDC");
   if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))leg = new TLegend(xleft,top-ysize+0.01,xright-0.76,top+0.01, NULL,"brNDC");
   if(title.Contains("higgs_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))leg = new TLegend(xleft+0.05,top-ysize,xright,top, NULL,"brNDC");
-  if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec")&&narr==13)leg = new TLegend(xleft-0.3,top-ysize+0.01,xright-0.3,top+0.01, NULL,"brNDC");
+  if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec")&&narr==13)leg = new TLegend(xleft-0.3,top-ysize+0.01,xright-0.3,top+0.01, NULL,"brNDC"); 
+  if(title.Contains("chi2min_chi2cut")&&name.Contains("M_W_gen"))leg = new TLegend(xleft-0.3,top-ysize+0.01,xright-0.3,top+0.01, NULL,"brNDC");
   if(name.Contains("MZPrime_TPrime1200ZT_zwtop")||name.Contains("MZPrime_TPrime1200HT_zwtop"))leg = new TLegend(xleft-0.4,top-ysize+0.01,xright-0.4,top+0.01, NULL,"brNDC");
   if(name.Contains("MZPrime_TPrime1200WB_zwnotop"))leg = new TLegend(xleft-0.4,top-ysize+0.05,xright-0.4,top+0.05, NULL,"brNDC");
   leg->SetFillColor(0);
@@ -1504,15 +1505,14 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   if(m_ps_name.Contains("_ZT"))pt->AddText("T ' #rightarrow Z t");
   if(m_ps_name.Contains("_HT"))pt->AddText("T ' #rightarrow H t");
   if(m_ps_name.Contains("_WB"))pt->AddText("T ' #rightarrow W b");
-  if(m_ps_name.Contains("ZprimeToTprimeTZ1500T1200"))pt->AddText("Z' (M = 2.0 TeV)");
-  if(m_ps_name.Contains("ZprimeToTprimeTZ1500T1200"))pt->AddText("T' (M = 1.2 TeV)");
+  if(m_ps_name.Contains("Mixed"))pt->AddText("Z' (M = 2.0 TeV)");
+  if(m_ps_name.Contains("Mixed"))pt->AddText("T' (M = 1.2 TeV)");
   if((m_ps_name.Contains("_ZT") || m_ps_name.Contains("_HT"))&&!(name.Contains("M_TPrime_rec"))) pt->AddText("M = 1.2 TeV");
   if(m_ps_name.Contains("_ZT")) pt->SetFillColor(kGreen -10);
   if(m_ps_name.Contains("_HT"))pt->SetFillColor(kCyan -7);
   if(m_ps_name.Contains("_WB"))pt->SetFillColor(606);
-  if(m_ps_name.Contains("ZprimeToTprimeTZ1500T1200")) pt->SetFillColor(921);
-  if(bDrawLegend)  pt->Draw();
-
+  if(m_ps_name.Contains("Mixed")) pt->SetFillColor(921);
+  if(!m_ps_name.Contains("Eff")) if(bDrawLegend)  pt->Draw();
   // TPaveText *pt = new TPaveText(.75,.5,.92,.6,"nbNDC");
   // pt->AddText("T ' #rightarrow H t");
   // pt->AddText("Z' (M = 1.5 TeV)");
@@ -1529,7 +1529,10 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   if(title.Contains("tagged")){
     TPaveText *ptag = new TPaveText(.235,.8,.44,.9,"nbNDC");
     if(title.Contains("higgs_"))ptag = new TPaveText(.55,.8,.7,.9,"nbNDC");
-    ptag->AddText("tagged");
+    if(title.Contains("one_higgs_")) ptag->AddText("H1 tagged");
+    else if(title.Contains("higgs_")) ptag->AddText("H tagged");
+    else if(title.Contains("zw_")) ptag->AddText("Z/W tagged");
+    else ptag->AddText("tagged");
     ptag->SetFillColor(0);
     ptag->SetTextSize(0.08);
     ptag->Draw();
