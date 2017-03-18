@@ -12,10 +12,10 @@ SteerPlotter(){
 
 
   // steering for the plotter
-//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/data2016/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
-// fInputFiles    = "  MC.MC_ZPrime15001200HT.root,      MC.MC_ZPrime20001200HT.root,      MC.MC_ZPrime25001500HT.root,      MC.TTbar.root,      MC.WJets.root, 	  MC.other.root";
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+//   fInputFiles    = "  MC.MC_ZPrime15001200HT.root,      MC.MC_ZPrime20001200HT.root,      MC.MC_ZPrime25001500HT.root,      MC.TTbar.root,      MC.MC_WJets.root, 	  MC.other.root";
 //  fSampleNames   = "	Z'(M_=_1.5TeV),	     		 Z'(M_=_2.0TeV),    	   	      Z'(M_=_2.5TeV), 	  		  ttbar, 		W+Jets,        	  Others";
-//  fSamplesWeight = "	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     	1.0, 		  1.0";             
+//  fSamplesWeight = "	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		1.0, 		  1.0";             
 //  fSamplesUnc    = "	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       	0.0, 		  0.0";              
 //  fHistColors    = " 	600,       		     432,          		   603, 			  		  625, 		       	791, 		  920";                
 //  fHistMarkers   = " 	0,         		     0,            		   0, 				  		  0, 		     	0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
@@ -34,19 +34,19 @@ SteerPlotter(){
 // fSamplesToStack = "  other, WJets, TTbarAll";
 
 // steering for the plotter
-  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/sidebands/side3/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
- fInputFiles    = " Data.Data*.root, MC.MC_ZPrime1500*1200*HT.root,      MC.MC_ZPrime2000*1200*HT.root,      MC.MC_ZPrime2500*1500*HT.root,      MC.TTbar*.root,   MC.QCD*.root,   MC.MC_WJets*.root, 	  MC.other*.root";
-// fInputFiles    = " Data.Data.root, MC.MC_ZPrime15001200HT.root,      MC.MC_ZPrime20001200HT.root,      MC.MC_ZPrime25001500HT.root,      MC.TTbar.root,   MC.QCD.root,   MC.MC_WJets.root, 	  MC.other.root";
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/rebin/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+// fInputFiles    = " Data.Data*.root, MC.MC_ZPrime1500*1200*HT.root,      MC.MC_ZPrime2000*1200*HT.root,      MC.MC_ZPrime2500*1200*HT.root,      MC.TTbar*.root,   MC.QCD*.root,   MC.MC_WJets*.root, 	  MC.other*.root";
+ fInputFiles    = " Data.Data.root, MC.MC_ZPrime15001200HT.root,      MC.MC_ZPrime20001200HT.root,      MC.MC_ZPrime25001200HT.root,      MC.TTbar.root,   MC.QCD.root,   MC.MC_WJets.root, 	  MC.other.root";
  fSampleNames   = " Data,		Z'(M_=_1.5TeV),	     		 Z'(M_=_2.0TeV),    	   	      Z'(M_=_2.5TeV),  	  	  ttbar, 	      QCD,	     W+Jets,        	  Others";
-  fSamplesWeight = " 1.0,	1.0,       		     		 1.0,          	      	   	      1.0, 			  1.0, 		      1.0,	     1.0, 		  1.0";             
-  fSamplesUnc    = " 0.0,	0.0,       		     		 0.0,          		  	      0.0, 			  0.0, 		      0.0,	     0.0, 		  0.0";              
-  fHistColors    = " 1,		600,       		     		 432,          		   	      603, 			  625, 		      815,	     791, 		  920";                
-  fHistMarkers   = " 20,	0,         		     		 0,            		   	      0, 			  0, 		      0,	     0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+ fSamplesWeight = " 1.0,	1.0,       		     		 1.0,          	      	   	      1.0, 			  1.0 , 		      1.0,	     1.0, 		  1.0";             
+ fSamplesUnc    = " 0.0,	0.0,       		     		 0.0,          		  	      0.0, 			  0.0, 		      0.0,	     0.0, 		  0.0";              
+ fHistColors    = " 1,		600,       		     		 432,          		   	      603, 			  625, 		      815,	     791, 		  920";                
+ fHistMarkers   = " 20,	0,         		     		 0,            		   	      0, 			  0, 		      0,	     0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
  fSamplesToStack = " TTbar ,other, WJets, QCD";
  
  
 
-  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/pictures/sidebands/side3/eps/ZprimeToTprimeT_T1200_HT.ps";
+  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/pictures/one_subjet_btag/eps/ZprimeToTprimeT_T1200_HT.ps";
   
   bRatioPlot = true;   // plot ratio histograms?
   bDrawLumi = true;

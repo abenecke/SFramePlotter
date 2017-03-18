@@ -12,9 +12,9 @@ SteerPlotter(){
 
 
   // steering for the plotter
- // fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/thesis/none/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
 //  fInputFiles    = "  MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,      MC.WJets.root, 	  MC.other.root";
-// fInputFiles    = "  MC.MC_ZPrime15001200ZT.root,      MC.MC_ZPrime20001200ZT.root,      MC.MC_ZPrime25001200ZT.root,      MC.TTbar.root,      MC.WJets.root, 	  MC.other.root";
+//  fInputFiles    = "  MC.MC_ZPrime15001200ZT.root,      MC.MC_ZPrime20001200ZT.root,      MC.MC_ZPrime25001200ZT.root,      MC.TTbar.root,      MC.WJets.root, 	  MC.other.root";
 //  fSampleNames   = "	M_Z'=1.5TeV(Zt),	     		 M_Z'=2.0TeV(Zt),    	   	      M_Z'=2.5TeV(Zt), 	  		  ttbar, 		W+Jets,        	  Others";
 //  fSamplesWeight = "	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     	1.0, 		  1.0";             
 //  fSamplesUnc    = "	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       	0.0, 		  0.0";              
@@ -22,21 +22,32 @@ SteerPlotter(){
 //  fHistMarkers   = " 	0,         		     0,            		   0, 				  		  0, 		     	0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
 // fSamplesToStack = " TTbar ,other, WJets";
 
+//HT steering for the plotter
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+//  fInputFiles    = "  MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,      MC.WJets.root, 	  MC.other.root";
+  fInputFiles    = "  MC.MC_ZPrime15001200ZT.root,      MC.MC_ZPrime20001200ZT.root,      MC.MC_ZPrime25001200ZT.root,      MC.TTbar.root,      MC.WJets.root, 	  MC.other.root";
+  fSampleNames   = "	M_Z'=1.5TeV(Zt),	     		 M_Z'=2.0TeV(Zt),    	   	      M_Z'=2.5TeV(Zt), 	  		  ttbar, 		W+Jets,        	  Others";
+  fSamplesWeight = "	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     	1.0, 		  1.0";             
+  fSamplesUnc    = "	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       	0.0, 		  0.0";              
+  fHistColors    = " 	600,       		     432,          		   603, 			  		  625, 		       	791, 		  920";                
+  fHistMarkers   = " 	0,         		     0,            		   0, 				  		  0, 		     	0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+ fSamplesToStack = " TTbar ,other, WJets";
+
 
 // steering for the plotter
-  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/data2016/none/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
-  fInputFiles    = "   Data.Data.root, MC.MC_ZPrime15001200ZT.root,    MC.MC_ZPrime20001200ZT.root,      MC.MC_ZPrime25001200ZT.root,      MC.TTbar.root,      MC.WJets.root, 	  MC.other.root";
-//  fInputFiles    = " Data.Data*.root, MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,      MC.WJets*.root, 	  MC.other*.root";
-  fSampleNames   = " Data,	Z'(M_=_1.5TeV),	     		 Z'(M_=_2.0TeV),    	   	      Z'(M_=_2.5TeV), 	  		  ttbar, 		W+Jets,        	  Others";
-  fSamplesWeight = " 1.0,	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     	1.0, 		  1.0";             
-  fSamplesUnc    = " 0.0,	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       	0.0, 		  0.0";              
-  fHistColors    = " 1,	416,	       		     420,          		   414, 			  		  625, 		       	791, 		  920";                
-  fHistMarkers   = " 20, 	0,        		     0,            		   0, 				  		  0, 		     	0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
- fSamplesToStack = "  other, WJets, TTbar";
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+//  fInputFiles    = "   Data.Data.root, MC.MC_ZPrime15001200ZT.root,    MC.MC_ZPrime20001200ZT.root,      MC.MC_ZPrime25001200ZT.root,      MC.TTbar.root,      MC.MC_WJets.root, 	  MC.other.root";
+//  fInputFiles    = " Data.Data*.root, MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,      MC.MC_WJets*.root, 	  MC.other*.root";
+//  fSampleNames   = " Data,	Z'(M_=_1.5TeV),	     		 Z'(M_=_2.0TeV),    	   	      Z'(M_=_2.5TeV), 	  		  ttbar, 		W+Jets,        	  Others";
+//  fSamplesWeight = " 1.0,	1.0,       		     1.0,          	      	   1.0, 			  		 0.944, 		     1.178, 		  1.0";             
+//  fSamplesUnc    = " 0.0,	0.0,       		     0.0,          		   0.0, 			  		  0.0, 		       	0.0, 		  0.0";              
+//  fHistColors    = " 1,	416,	       		     420,          		   414, 			  		  625, 		       	791, 		  920";                
+//  fHistMarkers   = " 20, 	0,        		     0,            		   0, 				  		  0, 		     	0, 		  0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+// fSamplesToStack = "  other, WJets, TTbar";
 
 // steering for the plotter
-//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/Sideband_Data/side3/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
-//  fInputFiles    = " Data.Data*.root, MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,   MC.QCD*.root,   MC.WJets*.root, 	  MC.other*.root";
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/uhh2.AnalysisModuleRunner";        // name of the cycle (first part of the name of the root files)
+//  fInputFiles    = " Data.Data*.root, MC.MC_ZPrime1500*1200*ZT.root,      MC.MC_ZPrime2000*1200*ZT.root,      MC.MC_ZPrime2500*1200*ZT.root,      MC.TTbar*.root,   MC.QCD*.root,   MC.MC_WJets*.root, 	  MC.other*.root";
 // fInputFiles    = " Data.Data.root, MC.MC_ZPrime15001200ZT.root, MC.MC_ZPrime20001200ZT.root, MC.MC_ZPrime25001200ZT.root, MC.TTbar.root,   MC.QCD.root, 	 MC.WJets.root,        MC.other.root";
 //  fSampleNames   = " Data,	Z'_(M_=_1.5TeV),	     		 Z'_(M_=_2.0TeV),    	   	     Z'_(M_=_2.5TeV), 	  		  ttbar, 	QCD,	W+Jets,        	  Others";
 //  fSamplesWeight = " 1.0,	1.0,       		     1.0,          	      	   1.0, 			  		  1.0, 		     1.0,	1.0, 		  1.0";             
@@ -57,10 +68,10 @@ SteerPlotter(){
 //  fHistColors    = " 1,		      416,       		     420,          		    414, 			   625, 	     815,	   791, 	   920, 		       920";         //         fHistMarkers   = " 20,	      0,         		     0,            		   0, 				   0, 		     0,		   0, 	     	     0, 			0";              
 // fSamplesToStack = " TTbar, WJets,QCD,DYJetsToLL,ST";
 
-  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/pictures/data2016/eps/ZprimeToTprimeT_T1200_ZT.ps";
+  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/pictures/one_subjet_btag/withoutdata/linear/ZprimeToTprimeT_T1200_ZT.ps";
   
-  bRatioPlot = true;   // plot ratio histograms?
-  bDrawLumi = false;
+  bRatioPlot = false;   // plot ratio histograms?
+  bDrawLumi = true;
   bShapeNorm = false;   // shape normalization? 
   bPortrait = true;    // portrait or landscape?
   bDrawEntries = false; // draw the histogram entries?
@@ -68,9 +79,9 @@ SteerPlotter(){
   bJetShapesPerSlice = false; // Plot JetShapes also slice per slice in r
   bSingleEPS = true;
   bDrawLegend = false;
-  bLogy = true;
-  fLumi = 2690.7 ;
-  fSysError = 0.044;
+  bLogy = false;
+  fLumi = 35.9 ;
+  fSysError = 0.026;
   bForPrelim = false;
   bForPublication = false;
 }

@@ -1,30 +1,41 @@
 SteerPlotter(){
   
   // steering for the plotter
-  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/rootfile/divided/uhh2.AnalysisModuleRunner";             // name of the cycle (first part of the name of the root files)
-//  fInputFiles    = " Data.Data*.root, MC.MC_ZPrime2000*1200*ZT.root,    MC.MC_ZPrime2000*1200*HT.root, 	MC.MC_ZPrime2000*1200*WB.root,     MC.TTbar*.root,  MC.WJets*.root,     MC.other*.root";    
-fInputFiles    = " Data.Data.root, MC.MC_ZPrime20001200ZT.root,    MC.MC_ZPrime20001200HT.root, 	MC.MC_ZPrime20001200WB.root,     MC.TTbar.root,  MC.WJets.root,    MC.other.root"; 
-  fSampleNames   = " Data,  	   Z' rightarrow tT'_(Zt),   	       Z' rightarrow tT'_(Ht),    	Z' rightarrow tT'_(Wb),		   ttbar, 	  WJets,    Others";  	       // name of chains to be plotted
-  fSamplesWeight = " 1.0,   	   1.0,       	       	       	       1.0,          		 	1.0,		      	   1.0, 	1.0,	      1.0";  	      
-  fSamplesUnc    = "  0.0, 	   0.0,       	       	      	        0.0,          	 		0.0,			   0.0, 	0.0,	      0.0";      	      
-  fHistColors    = "  1, 	   416 ,                          	600,          	  		632,			   625, 	791,	      920";                 
-  fHistMarkers   = "  20,  	   0,        	       	       	       0,            	 		0,			   0, 	 	0,  	      0";                 // histogram markers (0=line, -1=dashed line, 24=open circle...)
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/uhh2.AnalysisModuleRunner";             // name of the cycle (first part of the name of the root files)
+//  fInputFiles    = " Data.Data*.root, MC.MC_ZPrime2000*1200*ZT.root,    MC.MC_ZPrime2000*1200*HT.root, 	MC.MC_ZPrime2000*1200*WB.root,     MC.TTbar*.root,  MC.MC_WJets*.root,     MC.other*.root";    
+//  fInputFiles    = " Data.Data.root, MC.MC_ZPrime20001200ZT.root,    MC.MC_ZPrime20001200HT.root, 	MC.MC_ZPrime20001200WB.root,     MC.TTbar.root,  MC.MC_WJets.root,    MC.other.root"; 
+//  fSampleNames   = " Data,  	   Z' rightarrow tT'_(Zt),   	       Z' rightarrow tT'_(Ht),    	Z' rightarrow tT'_(Wb),		   ttbar, 	  WJets,    Others";  	       // name of chains to be plotted
+//  fSamplesWeight = " 1.0,   	   1.0,       	       	       	       1.0,          		 	1.0,		      	   1.0, 	1.0,	      1.0";  	      
+//  fSamplesUnc    = "  0.0, 	   0.0,       	       	      	        0.0,          	 		0.0,			   0.0, 	0.0,	      0.0";      	      
+//  fHistColors    = "  1, 	   416 ,                          	600,          	  		632,			   625, 	791,	      920";                 
+//  fHistMarkers   = "  20,  	   0,        	       	       	       0,            	 		0,			   0, 	 	0,  	      0";                 // histogram markers (0=line, -1=dashed line, 24=open circle...)
 
-fSamplesToStack = " TTbar ,WJets,other"; 
-  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/25ns/pictures/divided/eps/ZprimeToTprimeTZ1500T1200.ps";
+//fSamplesToStack = " TTbar ,MC_WJets,other"; 
+
+ // steering for the plotter
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/one_subjet_btag/uhh2.AnalysisModuleRunner";             // name of the cycle (first part of the name of the root files)
+//  fInputFiles    = " MC.MC_ZPrime2000*1200*ZT.root,    MC.MC_ZPrime2000*1200*HT.root, 	MC.MC_ZPrime2000*1200*WB.root,     MC.TTbar*.root";    
+  fInputFiles    = "  MC.MC_ZPrime20001200ZT.root,    MC.MC_ZPrime20001200HT.root, 	MC.MC_ZPrime20001200WB.root,     MC.TTbar.root"; 
+  fSampleNames   = "   	   Z' rightarrow tT'_(Zt),   	       Z' rightarrow tT'_(Ht),    	Z' rightarrow tT'_(Wb),		   ttbar";  	       // name of chains to be plotted
+  fSamplesWeight = "    	   1.0,       	       	       	       1.0,          		 	1.0,		      	   1.0";  	      
+  fSamplesUnc    = "   	   0.0,       	       	      	        0.0,          	 		0.0,			   0.0";      	      
+  fHistColors    = "  	   416 ,                          	600,          	  		632,			   1";                 
+  fHistMarkers   = "    	   0,        	       	       	       0,            	 		0,			   0";                 // histogram markers (0=line, -1=dashed line, 24=open circle...)
+
+  fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/pictures/one_subjet_btag/unstacked/Legend_Mixed.ps";
   
-  bRatioPlot = true;   // plot ratio histograms?
-  bDrawLumi = false;
+  bRatioPlot = false;   // plot ratio histograms?
+  bDrawLumi = true;
   bShapeNorm = false;   // shape normalization? 
   bPortrait = true;    // portrait or landscape?
   bDrawEntries = false; // draw the histogram entries?
   bFitPtBalanceHists = false; // perform fit of pt-balance histograms?
   bJetShapesPerSlice = false; // Plot JetShapes also slice per slice in r
   bSingleEPS = true;
-  bDrawLegend = false;
+  bDrawLegend = true;
   bLogy = true;
-  fLumi = 66.2;
-  fSysError = 0.044;
+  fLumi = 35.9;
+  fSysError = 0.026;
   bForPrelim = false;
   bForPublication = false;
 }
