@@ -124,6 +124,7 @@ void SHist::SetLegName(TString name)
   // m_leg_name.ReplaceAll("SPACE", " ");
   m_leg_name.ReplaceAll("_", " ");
   m_leg_name.ReplaceAll("ttbar", "t#bar{t}");
+  m_leg_name.ReplaceAll("MZp", "M_{Z'}");
   m_leg_name.ReplaceAll("~", ",");
   m_leg_name.ReplaceAll("[", "{");
   m_leg_name.ReplaceAll("]", "}");
@@ -275,14 +276,18 @@ void SHist::Draw(Option_t *option)
     if (m_hist->InheritsFrom("TH2")) return;
 
     if (m_hist->GetMarkerStyle()>0){
-
       if (m_draw_noxerr){
-	m_hist->Draw("P " + dopt);
+      	if (dopt.Contains("noyerrs")){
+      		dopt.ReplaceAll("noyerrs", "");
+			m_hist->Draw("HIST P " + dopt);
+      	} else {
+			m_hist->Draw("P " + dopt);
+		}
       } else {
-	for (Int_t i=1; i<m_hist->GetNbinsX()+1; ++i){
-	  if (m_hist->GetBinContent(i)==0) m_hist->SetBinError(i,0);
-	}
-	m_hist->Draw("E0 " + dopt);
+		for (Int_t i=1; i<m_hist->GetNbinsX()+1; ++i){
+	  		if (m_hist->GetBinContent(i)==0) m_hist->SetBinError(i,0);
+		}
+		m_hist->Draw("E0 " + dopt);
       }
     } else {
       m_hist->Draw("HIST " + dopt);

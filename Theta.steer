@@ -1,0 +1,38 @@
+SteerPlotter(){
+ 
+  // steering for the plotter
+
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/theta_histograms_MZPrime.root"; // name of the cycle (first part of the name of the root files)
+  fInputFiles    = "MC_ZPrime1500ToTPrime1200T_TPrimeToHT, MC_ZPrime2000ToTPrime1200T_TPrimeToHT, MC_ZPrime2500ToTPrime1200T_TPrimeToHT, TTbar,   	 WJets,     DYJetsToLL,    ST"; // name of the input files (second part)
+
+  fSampleNames   = "    Z'(M_=_1.5TeV),	     	     Z'(M_=_2.0TeV),    	    Z'(M_=_2.0TeV), 	  	   ttbar, 	    	   W+Jets,         DY, 			       ST"; 
+  fSamplesWeight = " 	       1.0,                      1.0,	   	            1.0,		            1.0,		        1.0,			   1.0,			          1.0"; 
+  fSamplesUnc    = " 	       0.0,                      0.0,		            0.0,	                    0.0,			0.0,			   0.0,			          0.0"; 
+  fHistColors    = " 	       432,            	         413,	      	            800,		            860,			840,			   867,			   	 1";   
+  fHistMarkers   = " 	       0,                        0,			      0,	                      0,			  0,			     0,			   	-2";   
+
+  fSamplesToStack = "TTbar, WJets,DYJetsToLL,ST"; // the names of chains which you would like to stack (same as in input filenames)
+
+
+ 
+
+fOutputPsFile = "test.ps";    
+
+
+  bRatioPlot = false;
+  bDrawLumi = true;   // plot ratio histograms?
+  bDrawLegend = true;   // plot ratio histograms?
+  bShapeNorm = false;   // shape normalization?
+  bPortrait = true;    // portrait or landscape?
+  bDrawEntries = false; // draw the histogram entries?
+  bFitPtBalanceHists = false; // perform fit of pt-balance histograms?
+  bJetShapesPerSlice = false; // Plot JetShapes also slice per slice in r
+  fSysError = 0.026; // normalisation error
+  bSingleEPS = true;
+  bPlotThetaFile = true;
+  bLogy = true;
+  fLumi = 35.9;
+  bForPrelim = false;
+  bForPublication = false;
+}
+

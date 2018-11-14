@@ -1,0 +1,112 @@
+SteerPlotter(){
+  
+//  // // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    With all data and all backgrounds %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//  //  //  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/theta/theta_MZPrime_1200_br0p0_1p0_0p0.root"; 
+// // fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_background/rootfiles/MLE_fit_FakeData_MZPrime_1200_br1p0_0p0_0p0.root";
+//    fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/theta/theta_Preselection_MZPrime_1200_br1p0_0p0_0p0.root";
+// //   fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_background/rootfiles/TEST.root";
+//  //    fInputFiles    = " DATA, MC_ZPrime1500ToTPrime1200T, MC_ZPrime2000ToTPrime1200T, MC_ZPrime2500ToTPrime1200T, TTbar,   NEW_QCD, 	 WJets,     DYJetsToLL,    ST";
+//     fInputFiles    = " DATA, MC_ZPrime1500ToTPrime1200T, MC_ZPrime1500ToTPrime1200T, MC_ZPrime1500ToTPrime1200T, TTbar,   NEW_QCD, 	 WJets,     DYJetsToLL,    ST";
+//     fSampleNames   = " DATA,	      Z'(M_=_1.5TeV),	     	     Z'(M_=_2.0TeV),    	    Z'(M_=_2.5TeV), 	  	   ttbar, 	     QCD, 	   W+Jets,         DY + ST, 		   ST ";
+//   //  fInputFiles    = " DATA, MC_ZPrime1500ToTPrime1200T_TPrimeToHT, MC_ZPrime1500ToTPrime1200T_TPrimeToZT, MC_ZPrime1500ToTPrime1200T_TPrimeToWB, TTbar,   QCD, 	 WJets,     DYJetsToLL,    ST";
+//   //  fSampleNames   = " DATA,	      T' rightarrow Ht,	     	     T' rightarrow Zt,    	    T' rightarrow Wb, 	  	   ttbar, 	     QCD, 	   W+Jets,         DY, 		   ST ";
+//      fSamplesWeight = " 1.0,	      1.0,       		     1.0,          	      	    1.0, 			   1.0, 	     1.0,	   1.0,	   	   1.0,       	   1.0";   
+//      fHistColors    = " 1,		      600,       		     432,          		    603, 			   625, 	     815,	   791, 	   920,    920"; 
+//      fHistMarkers   = " 20,	           0,         		          0,            		   0, 				   0, 		     0,		   0, 	     	     0,    0";  
+//      fSamplesToStack = " TTbar, WJets,NEW_QCD,DYJetsToLL,ST";
+
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    With DATA and without QCD %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//     fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_background/rootfiles/postfit_histo_1p0_0p0_0p0.root";
+//    fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/theta/theta_MZPrime_1200_br0p0_1p0_0p0.root"; 
+//  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/theta/theta_Preselection_MZPrime_1200_br1p0_0p0_0p0.root";
+ fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_signal/rootfiles/Preselection_1200_br1p0_0p0_0p0_decaymixed.root";
+// fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_background/rootfiles/CR_SR_ZT.root";
+   fInputFiles    = " DATA, MC_ZPrime1500ToTPrime1200T_TPrimeToHT, MC_ZPrime1500ToTPrime1200T_TPrimeToZT, MC_ZPrime1500ToTPrime1200T_TPrimeToWB, TTbar,   	 WJets,     DYJetsToLL,    ST";
+   fSampleNames   = " DATA,	      Z' rightarrow tT'(Ht),	     	     Z'rightarrow tT'(Zt),    	    Z'rightarrow tT'(Wb), 	  	   ttbar, 	     	   W+Jets,         DY+ST, 			       ST ";
+   fSamplesWeight = " 1.0,	      1.0,       		     1.0,          	      	    1.0, 			   1.0, 	     	   1.0,	   	   1.0,       		       1.0"; 
+   fHistColors    = " 1,		      600,       		     416,          		    632, 			   625, 	   	   791, 	   920, 	       920"; 
+//   fHistColors    = "1,		      416,       		     420,          		    414, 			   625, 	     	   791, 	   920, 	       920";
+   fHistMarkers   = " 20,	      		          0,            		   0, 				   0, 		     0,		   0, 	     	     0, 			0";  
+   fSamplesToStack = " TTbar, WJets,DYJetsToLL,ST";
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Without DATA with all backgrounds %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//   fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/theta/theta_MZPrime_1200_br0p0_1p0_0p0.root"; 
+//   fInputFiles    = "  MC_ZPrime1500ToTPrime1200T, MC_ZPrime2000ToTPrime1200T, MC_ZPrime2500ToTPrime1200T, TTbar,   QCD, 	 WJets,     DYJetsToLL,    ST";
+//   fSampleNames   = "	      Z'(M_=_1.5TeV),	     	     Z'(M_=_2.0TeV),    	    Z'(M_=_2.0TeV), 	  	   ttbar, 	     QCD, 	   W+Jets,         DY+ST, 			       ST ";
+//   fSamplesWeight = " 	      1.0,       		     1.0,          	      	    1.0, 			   1.0, 	     1.0,	   1.0,	   	   1.0,       		       1.0"; 
+// //  fHistColors    = "		      600,       		     432,          		    603, 			   625, 	     815,	   791, 	   920, 	       920";
+//   fHistColors    = "		      416,       		     420,          		    414, 			   625, 	     815,	   791, 	   920, 	       920";
+//  fHistMarkers   = " 	           0,         		          0,            		   0, 				   0, 		     0,		   0, 	     	     0, 		0";  
+//  fSamplesToStack = " TTbar, WJets,QCD,DYJetsToLL,ST";
+
+ // //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Without DATA without QCD backgrounds %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ //    fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/theta/theta_MZPrime_1200_br1p0_0p0_0p0.root"; 
+ //    fInputFiles    = "  MC_ZPrime1500ToTPrime1200T, MC_ZPrime2000ToTPrime1200T, MC_ZPrime2500ToTPrime1200T, TTbar, 	 WJets,     DYJetsToLL,    ST";
+ //    fSampleNames   = "	      Z'(M_=_1.5TeV),	     	     Z'(M_=_2.0TeV),    	    Z'(M_=_2.0TeV), 	  	   ttbar, 	     	   W+Jets,         DY+ST, 			       ST ";
+ //    fSamplesWeight = " 	      1.0,       		     1.0,          	      	    1.0, 			   1.0, 	    	   1.0,	   	   1.0,       		       1.0"; 
+ //    fHistColors    = "		      600,       		     432,          		    603, 			   625, 	   791, 	   920, 	       920";
+ // //   fHistColors    = "		      416,       		     420,          		    414, 			   625, 	   791, 	   920, 	       920";
+ //   fHistMarkers   = " 	           0,         		          0,            		   0, 				   0, 			   0, 	     	     0, 		0";  
+ //   fSamplesToStack = " TTbar, WJets,DYJetsToLL,ST";
+
+
+
+
+
+//  // //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    With DATA and without QCD, Signal %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// //    fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_background/rootfiles/CR_SR.root";
+//     fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_background/rootfiles/postfit_histo.root";
+//     // fCycleName     = "/nfs/dust/cms/user/abenecke/scripts/theta_background/MLE_fit_FakeData_MZPrime_0_br1p0_0p0_0p0.root";
+//     fInputFiles    = " DATA,	TTbar,   	 WJets,     DYJetsToLL,    ST";
+//     fSampleNames   = " DATA,	ttbar, 	     	   W+Jets,         DY+ST, 			       ST ";
+//     fSamplesWeight = " 1.0,	1.0, 	     	   1.0,	   	   1.0,       		       1.0"; 
+//     fHistColors    = " 1,		625, 	   	   791, 	   920, 	       920"; 
+//     fHistMarkers   = " 20,	0,		   0, 	     	     0, 			0";  
+//     fSamplesToStack = " TTbar, WJets,DYJetsToLL,ST";
+
+   
+  
+
+
+  // scale systematic uncertainties by a factor (could be posterior knowledge from a MLE)
+// fScaleSysUnc = "PDF_PDF_LO, PDF_PDF_NLO, btag, eleid, elereco, eletrigger, h1b, h2b, jec, jer, lumi, muf_mur_DYJetsToLL, muf_mur_ST, muf_mur_TTbar, muf_mur_WJets, muonid, muontrigger, muontrk, pu, subbtag, top_eff, top_miss, toppt, zw_eff, zw_miss";
+// fSysUncWeight = " 0.986,  0.375,  0.581,  0.890,  0.873,  0.998,  0.656,  0.355,  0.520,  0.697,  0.927,  0.665,  0.894,  0.174,  0.226,  0.613,  0.669,  0.616,  0.405,  0.525,  0.973,  0.974,  0.547,  0.989,  0.403";
+
+
+
+
+ fOutputPsFile = "plots/PreselectionPlot_mixed.ps";
+// fOutputPsFile = "plots/CRSR_PostFit_Sideband.ps";
+// fOutputPsFile = "plots/POSTFIT_UNBLINDED_HT.ps";
+//  fOutputPsFile = "Scaled_background_HT_muon.ps";
+//    fOutputPsFile = "plots/UNBLINDED_PreFit_ZT.ps";
+
+  bRatioPlot = true;   // plot ratio histograms?
+  bDrawLumi = true;
+  bShapeNorm = false;   // shape normalization? 
+  bPortrait = true;    // portrait or landscape?
+  bDrawEntries = false; // draw the histogram entries?
+  bDrawLegend = true;
+
+  bForPrelim = false; // draw text saying "CMS Preliminary" -> only works if bDrawLumi is on
+  bForPublication = true; // draw text saying "CMS" -> only works if bDrawLumi is on
+  fLumi = 35.87;
+  fSysError = 0.026;
+
+  bSingleEPS = true;
+  bPlotThetaFile = true;
+  bLogy = true;
+  bIgnoreEmtpyBins = true; // don't plot a huge error in the ratio if bins are empty
+  bmuon="#mu + e channel";
+  bZScoreInRatio = false;
+}
+
+
+// Colors from ROOT:
+// num EColor { kWhite =0,   kBlack =1,   kGray=920
+//             ,kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432
+//             ,kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900};
+//
+// default QCD   = 867 -> lighter version of Azure
+// default ttbar = 810 -> dark version of Orange (rather red)

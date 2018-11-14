@@ -1,0 +1,61 @@
+SteerPlotter(){
+  
+    //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    With DATA and without QCD %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     fCycleName     = "rootfiles/postfit_histo_1p0_0p0_0p0_newsig.root";
+     fInputFiles    = " DATA,   TTbar,     WJets,     DYJetsToLL,   MC_ZPrime1500NarToTPrime1300T,   MC_ZPrime1500NarToTPrime800T,   MC_ZPrime1500NarToTPrime700T,     ST";
+     fSampleNames   = " Data,   ttbar,    W+Jets,          DY+ST,                MZp_=_1.5_TeV,                MZp_=_2.0_TeV,                MZp_=_2.5_TeV,     ST";
+     fSamplesWeight = "  1.0,     1.0,       1.0,            1.0,                          1.0,                          1.0,                          1.0,    1.0"; 
+     fHistColors    = "    1,     625,       791,            920,                          600,                          432,                          603,    920"; // HT
+ //  fHistColors    = "    1,     625,       791,            920,                          416,                          420,                          414,    920";//ZT
+ //  fHistColors    = "    1,     625,       791,            920,                          632,                          629,                          635,    920"; //WB
+     fHistMarkers   = "   20,       0,         0,              0,                            0,                            0,                            0,      0";  
+     fSamplesToStack = " TTbar, WJets, DYJetsToLL, ST";
+
+
+
+  
+
+
+  // scale systematic uncertainties by a factor (could be posterior knowledge from a MLE)
+// fScaleSysUnc = "PDF_PDF_LO, PDF_PDF_NLO, btag, eleid, elereco, eletrigger, h1b, h1b_eff, h2b, h2b_eff, jec, jer, lumi, muf_mur_DYJetsToLL, muf_mur_ST, muf_mur_TTbar, muf_mur_WJets, muonid, muontrigger, muontrk, pu, subbtag, top_eff, top_miss, toppt, zw_eff, zw_miss";
+// fSysUncWeight = " 0.794,  0.363,  0.557,  0.734,  0.726,  0.801,  0.587,  0,  0.339,  0,  0.459,  0.623,  0.752,  0.579,  0.744,  0.162,  0.220,  0.559,  0.597,  0.563,  0.398,  0.477,  0.782,  0.789,  0.544,  0.807,  0.381";
+//fScaleSysUnc = "PDF_PDF_LO, PDF_PDF_NLO, btag, eleid, elereco, eletrigger, h1b_bias, h1b_eff, h2b, h2b_eff, jec, jer, lumi, muf_mur_DYJetsToLL, muf_mur_ST, muf_mur_TTbar, muf_mur_WJets, muonid, muontrigger, muontrk, pu, subbtag, top_eff, top_miss_bias, zw_eff, zw_miss_bias";
+
+//fSysUncWeight = " 0.931,  0.382,  0.924,  0.930,  0.966,  0.948,  0.833,  1.041,  0.382,  1.041,  0.498,  1.000,  0.965,  0.738,  0.792,  0.225,  0.343,  0.895,  0.916,  0.984,  0.929,  0.854,  1.000,  0.595,  0.694,  0.549";
+
+//fSysUncWeight = " 0.928,  0.384,  0.891,  0.931,  0.967,  0.950,  0.830,  1.038,  0.382,  1.038,  0.503,  1.000,  0.953,  0.731,  0.799,  0.190,  0.343,  0.883,  0.913,  0.980,  0.926,  0.845,  0.995,  0.595,  0.694,  0.545";
+
+
+//    fOutputPsFile = "plots/UNBLINDED_Plots_HT.ps";     
+    fOutputPsFile = "plots/800_HT.ps";     
+//    fOutputPsFile = "plots/Test_HT.ps";    
+
+
+  bRatioPlot = true;   // plot ratio histograms?
+  bDrawLumi = true;
+  bShapeNorm = false;   // shape normalization? 
+  bPortrait = true;    // portrait or landscape?
+  bDrawEntries = false; // draw the histogram entries?
+  bDrawLegend = true;
+
+  bForPrelim = true; // draw text saying "CMS Preliminary" -> only works if bDrawLumi is on
+  bForPublication = true; // draw text saying "CMS" -> only works if bDrawLumi is on
+  fLumi = 35.9;
+  fSysError = 0.026;
+
+  bSingleEPS = true;
+  bPlotThetaFile = true;
+  bLogy = true;
+  bIgnoreEmptyBins = true; // don't plot a huge error in the ratio if bins are empty
+  bmuon="#mu + e channel";
+  bZScoreInRatio = false;
+}
+
+
+// Colors from ROOT:
+// num EColor { kWhite =0,   kBlack =1,   kGray=920
+//             ,kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432
+//             ,kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900};
+//
+// default QCD   = 867 -> lighter version of Azure
+// default ttbar = 810 -> dark version of Orange (rather red)

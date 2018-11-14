@@ -28,6 +28,8 @@ class SPlotter
   void PlotRatios(std::vector<SHist*> hists, int ipad);
   void PlotZScore(std::vector<SHist*> hists, int ipad);
   void PlotLumiYield(SHist* hist, int ipad);
+  void DrawPoissonCoverage(SHist* data, int lastbin=999999);
+  void DrawPoissonCoverageInRatio(std::vector<SHist*> hists);
 
   // collect all histograms
   void DoStacking(std::vector<TObjArray*>& hists, TObjArray* StackNames, bool rename=false);
@@ -47,12 +49,13 @@ class SPlotter
   void ShapeNormalise(std::vector<SHist*> hists);
   void DrawLegend(std::vector<SHist*> hists);
   void DrawLumi();
+  void DrawInfoText(TString title, TString name);
   void DrawSysError(SHist* stack);
   double CalcNormErrorForBin(SHist* stack, int i);
   double CalcShapeSysErrorForBinFromTheta(SHist* stack, int i, TString sign);
   // cosmetics
   void DoCosmetics(std::vector<SHist*> hists);
-  void GeneralCosmetics(TH1* hist);
+  void GeneralCosmetics(TH1* hist, TString dirname);
   void StackCosmetics(THStack* hist);
   void PortraitCosmetics(TH1* hist);
   void LandscapeCosmetics(TH1* hist);
@@ -80,6 +83,7 @@ class SPlotter
   void SetDrawLumi(Bool_t flag=true){bDrawLumi = flag;}
   void SetForPrelim(Bool_t flag=true){bForPrelim = flag;}
   void SetForPublication(Bool_t flag=true){bForPublication = flag;}
+  void Setmuon(TString name);
   void SetLumi(float lumi){m_lumi = lumi;}
   void SetNormError(float err){m_syserr = err;}
   void SetDrawLegend(Bool_t flag=true){bDrawLegend = flag;}
@@ -104,6 +108,8 @@ class SPlotter
   TCanvas* m_can; 
   TPostScript* m_ps; 
   TString m_ps_name;
+  TString m_muon;
+
 
   TPad* m_pad1;
   TPad* m_pad2;
@@ -124,13 +130,16 @@ class SPlotter
   bool  bForPublication;    // write "CMS"
   float m_lumi;             // total integrated luminosity
   float m_syserr;           // systematic error on normalisation uncertainty
+  int b_category;
   bool  bDrawLegend;        // display legend?
   bool  bPlotRatio;         // should a ratio be plotted?
   bool  bZScoreInRatio;     // plot the z-score instead of the usual ratio
   bool  need_update;        // should the canvas get an update?
   bool  bPlotLogy;          // plot all plots with log y scale
   bool  bIgnoreEmptyBins;   // don't plot empty bins in the ratio
-
+  bool  bPubStyleErrors;    // draw errors with Poissoninan coverage but without x-error bar
+  bool b_both;
+  bool b_btag;
 };
 
 #endif

@@ -111,12 +111,14 @@ int main(int argc, char** argv)
   Bool_t ThetaFile           = steerfile->GetPlotThetaFile();
   Bool_t Logy                = steerfile->GetLogy();
   Bool_t IgnoreEmptyBins     = steerfile->GetIgnoreEmptyBins();
+  TString b_muon = steerfile->Getmuon();
 
   TObjArray* ScaleSysUnc     = steerfile->GetScaleSysUnc();
   TArrayF  SysUncWeight      = steerfile->GetSysUncWeight();
   
 
   // _______________ loop over files and get all histograms ______________
+
 
   FileParser fp;
   //fp.SetDebug();
@@ -175,6 +177,7 @@ int main(int argc, char** argv)
   pl.SetZScoreInRatio(zscore);
   pl.SetDrawLumi(DrawLumi); 
   pl.SetDrawLegend(DrawLegend);
+  pl.Setmuon(b_muon);
   pl.SetPsFilename(PsFilename);
   pl.SetLumi(Lumi);
   pl.SetNormError(SysErr);

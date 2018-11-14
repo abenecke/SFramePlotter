@@ -1,0 +1,45 @@
+SteerPlotter(){
+  
+
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/paper_w2GeV/uhh2.AnalysisModuleRunner";      
+ fInputFiles    = "Data.Data.root, MC.Paper.root";
+ fSampleNames   = " Data, MC";
+ fSamplesWeight = " 1.0,	1.0";             
+ fSamplesUnc    = " 0.0,	0.0";              
+ fHistColors    = " 1,	600";                
+ fHistMarkers   = " 20,		0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+ fSamplesToStack = " Paper";
+ fOutputPsFile = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/pictures/paper_w2GeV/paper.ps";
+  
+  bRatioPlot = true;  
+  bDrawLumi = false;
+  bShapeNorm = true;   
+  bPortrait = true;    
+  bDrawEntries = false; 
+  bFitPtBalanceHists = false; 
+  bJetShapesPerSlice = false; 
+  bSingleEPS = true;
+  bDrawLegend = true;
+  bLogy = false;
+  fLumi = 35.87 ;
+  fSysError = 0.026;
+  bForPrelim = false;
+  bForPublication = false;
+ // bmuon="pT > 2GeV";
+//  bmuon ="min. bias 65.74 mb";
+  bmuon ="";
+}
+
+
+// Colors from ROOT:
+// num EColor { kWhite =0,   kBlack =1,   kGray=920
+//             ,kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432
+//             ,kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900};
+//
+// default QCD   = 867 -> lighter version of Azure
+// default ttbar = 810 -> dark version of Orange (rather red)
+
+//  fInputFiles    = "DATA.DATA.root, MC.TTbar*.root, MC.W*Jets.root,  MC.SingleTop*ch.root, MC.DY*.root, MC.ZP2000w200.root, MC.ZP2000w20.root "; // name of the input files (second part)
+// fSamplesToStack = "TTbar,  WJets, SingleTop, DY"; // the names of chains which you would like to stack (same as in input filenames)
+
+

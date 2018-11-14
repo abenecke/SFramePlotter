@@ -192,13 +192,16 @@ void BaseSteer::SetValues(TString& block)
         expression = block(0,index+1);
         block = block(index+1,block.Length()-index-1); // rest after ';'
 
-            // split the expression into left hand side and right hand side
+
+	// split the expression into left hand side and right hand side
         type = SplitExpression(expression,variable,value);
         if ( type != 1 ) continue; // only assignments are treated so far
 	Bool_t setVariable = kFALSE;
+	
         thevar = myclass->GetDataMember(variable);
         if (thevar) { // variable in this class
 	  //setter = thevar->SetterMethod(myclass);
+	
 	  TString methodSetName; 
 	  methodSetName.Form("Set%s", thevar->GetName()+1);
 	  setter = new  TMethodCall(myclass,methodSetName,value);
@@ -213,6 +216,7 @@ void BaseSteer::SetValues(TString& block)
 	      setVariable = kTRUE;
 	      }
         } else {      // variable might be in base class
+
             TClass *base = myclass->GetBaseDataMember(variable);
             if (base) { // variable in a base class
                 thevar = base->GetDataMember(variable);

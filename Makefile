@@ -73,10 +73,10 @@ $(TMPDIR)/%.o: %.cxx
 # Rule to create the dictionary
 $(DICTFILE): $(patsubst %_Dict.cxx,%.h,$@)
 	@echo "Generating dictionary $@ with file $(patsubst %_Dict.cxx,%.h,$@)"
+#	@$(shell root-config --exec-prefix)/bin/rootcling -rootbuild -f $@ -I/. $(patsubst %_Dict.cxx,%.h,$@)
 	@$(shell root-config --exec-prefix)/bin/rootcint -f $@ -c -p -I/. $(patsubst %_Dict.cxx,%.h,$@)
 
 Plots:  $(OBJS) $(DICTOBJ)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(DICTOBJ) $(ROOTLIBS) \
 	-o $(BINDIR)/Plots
-	cp $(BINDIR)/Plots $(SFRAME_DIR)/bin
 	@echo "Plotter for the SFrame Analysis created."

@@ -15,6 +15,7 @@
 #include <TF1.h>
 #include <TGraphAsymmErrors.h>
 #include <TMath.h>
+#include "Math/QuantFuncMathCore.h"
 #include <TColor.h>
 #include "SPlotter.h"
 
@@ -26,6 +27,7 @@ SPlotter::SPlotter()
   m_can = NULL;
   m_ps  = NULL;
   m_ps_name = "default.ps";
+  m_muon = "default";
 
   m_pad1 = NULL;
   m_pad2 = NULL;
@@ -51,9 +53,11 @@ SPlotter::SPlotter()
   bSingleEPS   = false;
   need_update  = true;
   bPlotLogy    = false;
-  bIgnoreEmptyBins = false;
- 
-
+  bIgnoreEmptyBins = true;
+  bPubStyleErrors = true;
+  b_category = 10;
+  b_both=false;
+  b_btag=false;
 }
 
 SPlotter::~SPlotter()
@@ -71,7 +75,11 @@ void SPlotter::SetPsFilename(TString name)
   m_ps_name = name;
   
 }
-
+void SPlotter::Setmuon(TString name)
+{
+  m_muon = name;
+  
+}
 
 void SPlotter::DoStacking(vector<TObjArray*>& hists, TObjArray* StackNames, bool rename)
 {
@@ -265,7 +273,8 @@ void SPlotter::SetupGlobalStyle()
   gStyle->SetAxisColor(1, "XYZ");
   gStyle->SetStripDecimals(kTRUE);
   gStyle->SetTickLength(0.03, "XYZ");
-  gStyle->SetNdivisions(510, "XYZ");
+  // gStyle->SetNdivisions(510, "XYZ");
+  gStyle->SetNdivisions(1000, "XYZ");
 
   gStyle->UseCurrentStyle();
 
@@ -280,6 +289,7 @@ void SPlotter::Cleanup()
     delete m_can;
     m_can = NULL;
   }
+ 
 }
 
 void SPlotter::SetupCanvas()
@@ -426,8 +436,8 @@ void SPlotter::SetupCanvasForEPS()
   
   m_rp1_top->SetTopMargin(0.065); m_rp1_top->SetBottomMargin(0.0);  m_rp1_top->SetLeftMargin(0.19); m_rp1_top->SetRightMargin(0.05);
   m_rp2_top->SetTopMargin(0.065); m_rp2_top->SetBottomMargin(0.0);  m_rp2_top->SetLeftMargin(0.19); m_rp2_top->SetRightMargin(0.05);
-  m_rp1->SetTopMargin(0.0);    m_rp1->SetBottomMargin(0.35);  m_rp1->SetLeftMargin(0.19);  m_rp1->SetRightMargin(0.05);
-  m_rp2->SetTopMargin(0.0);    m_rp2->SetBottomMargin(0.35);  m_rp2->SetLeftMargin(0.19);  m_rp2->SetRightMargin(0.05);    
+  m_rp1->SetTopMargin(0.05);    m_rp1->SetBottomMargin(0.35);  m_rp1->SetLeftMargin(0.19);  m_rp1->SetRightMargin(0.05);
+  m_rp2->SetTopMargin(0.05);    m_rp2->SetBottomMargin(0.35);  m_rp2->SetLeftMargin(0.19);  m_rp2->SetRightMargin(0.05);    
   
   if (debug){
     m_rp1_top->SetFillColor(kYellow);
@@ -469,6 +479,7 @@ void SPlotter::OpenPostscript(TString dir, TString hname)
     filename.Append("_");
     filename.Append(hname);
     filename.Append(".eps");
+    //    filename.Append(".pdf");
     
   } else {
     
@@ -599,7 +610,7 @@ void SPlotter::ProcessAndPlot(std::vector<TObjArray*> histarr)
       
       PlotHists(hists, ipad);
       // draw a legend    
-      //TEST
+      
       TString title = hists.at(0)->GetDir();
       TString name = hists.at(0)->GetName();
       if(title.Contains("muon_twodcut")&&name.Contains("number"))bleg=true;
@@ -610,20 +621,22 @@ void SPlotter::ProcessAndPlot(std::vector<TObjArray*> histarr)
       }
       // draw lumi information
       if (bDrawLumi) DrawLumi();
+      DrawInfoText(title, name);
+
+
       // draw the ratio
       if (bPlotRatio){
 	if (bZScoreInRatio) PlotZScore(hists, ipad);
 	else PlotRatios(hists, ipad);
       }
+
     
     }
 
     ++iplot;
   }
-
   // done!
   if (!bSingleEPS) DrawPageNum();
-
   if (need_update) m_can->Update();
   Cleanup(); 
   
@@ -769,6 +782,22 @@ void SPlotter::PlotHists(vector<SHist*> hists, int ipad)
     else m_pad2->cd();
   }
 
+  //Test
+  SHist* test = hists[0];
+  TString name = test->GetName();
+  TString title = hists.at(0)->GetDir();
+
+  bool orig_bPlotLogy=bPlotLogy;
+  if(m_ps_name.Contains("paper")&&name.Contains("pt")) bPlotLogy =true;
+  if(name.Contains("higgstop_muon"))bPlotLogy=false;
+  if(name.Contains("higgsnotop_muon"))bPlotLogy=false;
+  if(name.Contains("higgsnotop_one_btag_elec"))bPlotLogy=false;
+  if(name.Contains("higgsnotop_elec"))bPlotLogy=false;
+  if(name.Contains("higgstop_elec"))bPlotLogy=false;
+  if(name.Contains("higgstop_one_btag_elec"))bPlotLogy=false;
+  if(name.Contains("higgstop_one_btag_muon"))bPlotLogy=false;
+  if(name.Contains("zwtop"))bPlotLogy=false;
+  //  std::cout<<"name "<<name<<"  title  "<<title<<std::endl;
   bool isok = SetMinMax(hists);
   if (isok) SetLogAxes(hists);
 
@@ -779,7 +808,11 @@ void SPlotter::PlotHists(vector<SHist*> hists, int ipad)
   // first, draw data if it exists
   int ndrawn = 0;
   if (sdata){
-    sdata->Draw();
+    if (bPubStyleErrors){
+      sdata->Draw("noyerrs");
+    } else {
+      sdata->Draw();
+    }
     ++ndrawn;
   }
 
@@ -798,10 +831,10 @@ void SPlotter::PlotHists(vector<SHist*> hists, int ipad)
       TList* hists = sstack->GetStack()->GetHists();
       // calculate individual area
       for (int i=0; i<hists->GetSize(); ++i){
-	TH1* h = (TH1*) hists->At(i);
-	int iend = h->GetNbinsX();
-	double area = h->Integral(1,iend);
-	cout << "  entries of histogram " << i << " in stack = " << area << endl;
+	     TH1* h = (TH1*) hists->At(i);
+	     int iend = h->GetNbinsX();
+	     double area = h->Integral(1,iend);
+	     cout << "  entries of histogram " << i << " in stack = " << area << endl;
       }
     }
   }
@@ -844,10 +877,133 @@ void SPlotter::PlotHists(vector<SHist*> hists, int ipad)
   }
 
   // draw data on top
-  if (sdata) sdata->Draw("same");
+  if (sdata){ 
+    //cout << "name = " << sdata->GetName() << endl;
+    // for data, set to draw poissonian coverage if required
+    if (bPubStyleErrors){
+      int lastnonzero = 99999;
+      if (sstack){
+        for (int i=1; i<sstack->GetStack()->GetHistogram()->GetNbinsX()+1; ++i){
+          TH1D* h = (TH1D*) sstack->GetStack()->GetStack()->At(sstack->GetStack()->GetStack()->GetLast());
+          //cout << "bin " << i << " stack entries = " << h->GetBinContent(i) << endl;
+          if (h->GetBinContent(i)>0) lastnonzero = i;
+        }
+      }
+      sdata->Draw("noyerrs same");
+      DrawPoissonCoverage(sdata, lastnonzero);
+    } else {
+      sdata->Draw("same");
+    }
+  }
 
   gPad->RedrawAxis();
+  bPlotLogy=orig_bPlotLogy;
+}
+
+void SPlotter::DrawPoissonCoverage(SHist* data, int lastbin)
+{
+
+  double alpha = 1 - 0.6827;
+
+  TGraphAsymmErrors* ge = new TGraphAsymmErrors();
+
+  TH1D* dh = (TH1D*) data->GetHist();
+  int np = 0;
+  bool first = false;
+  TString name = dh->GetName();
+  for (int i=1; i<dh->GetNbinsX()+1; ++i){
+    int N = dh->GetBinContent(i);
+    double L =  (N==0) ? 0  : (ROOT::Math::gamma_quantile(alpha/2,N,1.));
+    double U =  ROOT::Math::gamma_quantile_c(alpha/2,N+1,1) ;
+    if (N>0) first = true; 
+    //if (name=="muo_T1B0_L1chi2lo_mtt" && i==5) first = true;
+    //if (first && N<5 && i<=lastbin){
+      ge->SetPoint(np,dh->GetXaxis()->GetBinCenter(i), N);
+      ge->SetPointEYlow(np, N-L);
+      ge->SetPointEYhigh(np, U-N);
+      ge->SetPointEXlow(np, dh->GetXaxis()->GetBinCenter(i) - dh->GetXaxis()->GetBinLowEdge(i));
+      ge->SetPointEXhigh(np,dh->GetXaxis()->GetBinUpEdge(i) - dh->GetXaxis()->GetBinCenter(i) );
+      ++np;
+    //}
+  }
   
+  ge->SetLineColor(kBlack);
+  ge->SetLineWidth(2);
+  ge->Draw("Z0 same");
+
+}
+
+void SPlotter::DrawPoissonCoverageInRatio(vector<SHist*> hists)
+{
+
+  // get the data and the stack
+  SHist* sstack = SelStack(hists);
+  SHist* sdata  = SelData(hists);
+  TH1D* mc = (TH1D*) sstack->GetStack()->GetStack()->At(sstack->GetStack()->GetStack()->GetLast());
+
+  double alpha = 1 - 0.6827;
+
+  TGraphAsymmErrors* ge = new TGraphAsymmErrors();
+
+  TH1D* dh = (TH1D*) sdata->GetHist();
+  TString name = dh->GetName();
+  int np = 0;
+  bool first = false;
+  bool print = false;
+  for (int i=1; i<dh->GetNbinsX()+1; ++i){
+    int N = dh->GetBinContent(i);
+    if (N>0) first = true;
+    double Nmc = mc->GetBinContent(i);
+    if (Nmc>0) first = true;
+
+    //if (name=="muo_T1B0_L1chi2lo_mtt" && i==5) first = true; 
+    //if (name=="muo_T1B0_L1chi2lo_mtt" && i==7) print = true; 
+    //if (N>=5) continue;
+    if (!first) continue;
+
+    double pred = mc->GetBinContent(i);
+    if (pred==0) continue;
+
+    double U =  ROOT::Math::gamma_quantile_c(alpha/2,N+1,1);
+    double rU = U / mc->GetBinContent(i);    
+    double L = 0.; 
+    double rL = 0.;
+    if (N>0){ 
+      L = ROOT::Math::gamma_quantile(alpha/2,N,1.);
+      rL = L / mc->GetBinContent(i);
+    }
+
+    if (print){
+      cout << "bin = " << i << " " << dh->GetXaxis()->GetBinLowEdge(i) << " < mtt < " << dh->GetXaxis()->GetBinUpEdge(i) << endl;
+      cout << "N = " << N << endl;
+      cout << "U = " << U << endl;
+      cout << "L = " << L << endl;
+      cout << "mc bin content = " << mc->GetBinContent(i) << endl;
+      cout << "rU = " << rU << endl;
+      cout << "rL = " << rL << endl;
+    }
+
+    if (first){
+      double r = N / mc->GetBinContent(i);
+      ge->SetPoint(np,dh->GetXaxis()->GetBinCenter(i), r);
+      if (print){
+        cout << "setting point to " << dh->GetXaxis()->GetBinCenter(i) << " and " << r << endl;
+        cout << "setting point error to " << rL << " and " << rU << endl;
+        print = false;
+      }
+      ge->SetPointEYlow(np, r-rL);
+      ge->SetPointEYhigh(np, rU-r);
+      ge->SetPointEXlow(np, dh->GetXaxis()->GetBinCenter(i) - dh->GetXaxis()->GetBinLowEdge(i));
+      ge->SetPointEXhigh(np,dh->GetXaxis()->GetBinUpEdge(i) - dh->GetXaxis()->GetBinCenter(i) );
+      ++np;
+    }
+  }
+  
+  ge->SetLineColor(kBlack);
+  ge->SetLineWidth(2);
+  ge->Draw("Z0 same");
+
+
 }
 
 void SPlotter::DrawSysError(SHist* stack)
@@ -945,7 +1101,7 @@ double SPlotter::CalcShapeSysErrorForBinFromTheta(SHist* stack, int ibin, TStrin
 	    // check if systematic uncertainty comes from the same sample as the background (e.g. ttbar)
 	    if (systFullNamePieces->Contains(sampleName)){
 	      absoluteerr = (hSyst->GetBinContent(ibin))-(h->GetBinContent(ibin));
-	      
+	    
 	      // the second one contains the name of the uncertainty: check if the error should be reduced
 	      TString sysname = ((TObjString*) systFullNamePieces->At(1))->GetString();
 	      
@@ -959,7 +1115,6 @@ double SPlotter::CalcShapeSysErrorForBinFromTheta(SHist* stack, int ibin, TStrin
 	      
 	      // got it: add to the total error in quadrature
 	      squarederr += absoluteerr*absoluteerr;	   
-	      
 	    }
 	  }	  
 	}
@@ -991,11 +1146,24 @@ void SPlotter::PlotRatios(vector<SHist*> hists, int ipad)
     rh->DrawNoErrorX(false);
     TString name = rh->GetName();
     if (name.Contains("_lx")) gPad->SetLogx(1);
-    if (ndrawn==0) rh->Draw();
-    else rh->Draw("same");
+    if (ndrawn==0){ 
+      rh->Draw();
+    } else {
+      if (bPubStyleErrors){
+        rh->DrawNoErrorX(true);
+        rh->Draw("noyerrs same");
+      } else {
+        rh->Draw("same");        
+      }
+    }
     ++ndrawn;
   }
  
+  // draw coverage for empty bins
+  if (bPubStyleErrors){
+    DrawPoissonCoverageInRatio(hists);
+  }
+
   gPad->RedrawAxis();
   
 }
@@ -1011,6 +1179,8 @@ vector<SHist*> SPlotter::CalcRatios(vector<SHist*> hists)
   // first get the basic histograms
   SHist* sstack = SelStack(hists);
   SHist* sdata  = SelData(hists);
+
+  TString name = sdata->GetName();
   
   vector<SHist*> ratios;
 
@@ -1035,7 +1205,7 @@ vector<SHist*> SPlotter::CalcRatios(vector<SHist*> hists)
     rdhist->SetBinError(ibin, rel_err * rdhist->GetBinContent(ibin) );
   }
   //  rdhist->GetYaxis()->SetTitle(rd->GetProcessName() + " / BG");
-    rdhist->GetYaxis()->SetTitle( "Data / BG");
+    rdhist->GetYaxis()->SetTitle( "Data / Pred.");
   TString prname = rd->GetProcessName();
   if (prname.Contains("signal", TString::kIgnoreCase)){
     rdhist->GetYaxis()->SetTitle("Signal/Side");
@@ -1088,11 +1258,14 @@ vector<SHist*> SPlotter::CalcRatios(vector<SHist*> hists)
     eAsym -> SetPointError(ibin, ex_low, ex_up, ey_low, ey_up); 
 
     // set error to 0 for empty bins
-    if (bIgnoreEmptyBins && val<0.1){
-      //cout << "no MC in bin " << ibin << " lower = " << denom->GetXaxis()->GetBinLowEdge(ibin) << " upper = " << denom->GetXaxis()->GetBinUpEdge(ibin) << endl;
+    if (bIgnoreEmptyBins && val<0.001){
+      cout << "no MC in bin " << ibin << " lower = " << denom->GetXaxis()->GetBinLowEdge(ibin) << " upper = " << denom->GetXaxis()->GetBinUpEdge(ibin) << endl;
+      cout << "val = " << val << " MC stat unc = " << MCstat->GetBinError(ibin) << " MCtot = " << MCtot->GetBinError(ibin) << endl;      
       MCstat->SetBinError(ibin, 0.);
       MCtot->SetBinError(ibin, 0.);
       eAsym -> SetPointError(ibin, ex_low, ex_up, 0, 0); 
+    } else if (bIgnoreEmptyBins && val<0.05){
+      MCstat->SetBinError(ibin, 2.);
     }
    
   }
@@ -1239,14 +1412,11 @@ vector<SHist*> SPlotter::CalcZScore(vector<SHist*> hists)
     Double_t norm_err = CalcNormErrorForBin(sstack, ibin);
 
     Double_t tot_err2 = norm_err*norm_err + sys*sys + staterr*staterr;
-
     Double_t sys_err_plus = CalcShapeSysErrorForBinFromTheta(sstack, ibin, "plus");
     Double_t sys_err_minus = CalcShapeSysErrorForBinFromTheta(sstack, ibin, "minus");
     // symmetrize
     double sys_err_tot = ( fabs(sys_err_plus) + fabs(sys_err_minus) ) / 2.;
-
     tot_err2 += sys_err_tot*sys_err_tot;
-    
     experrhist->SetBinError(ibin, TMath::Sqrt(tot_err2));   
   }
 
@@ -1270,14 +1440,17 @@ vector<SHist*> SPlotter::CalcZScore(vector<SHist*> hists)
     integXtoInf += expdist.GetBinContent(expdist.FindFixBin(vobs))*0.5; // add half of the bin content because of binning 
     double pvalue = 1-integXtoInf;
     double vzscore = TMath::NormQuantile(pvalue);
+    //Hier
+    //    std::cout<<"zscore error  "<<vzscore<<std::endl;
+    std::cout<<verr_exp<<" , ";
     //double zscore = (vobs-vexp)/verr_exp; // naive definition, would also work (and we would not need to dice)   
 
     // save the histograms for debugging
-    TString fname = TString::Format("temp_%i.root", ibin);
-    TFile* f = new TFile(fname, "RECREATE");
-    expdist.Write();
-    f->Write();
-    f->Close();
+    //TString fname = TString::Format("temp_%i.root", ibin);
+    //TFile* f = new TFile(fname, "RECREATE");
+    //expdist.Write();
+    //f->Write();
+    //f->Close();
 
     if (vobs<1){
       vzscore = -999;
@@ -1320,72 +1493,54 @@ vector<SHist*> SPlotter::CalcZScore(vector<SHist*> hists)
 void SPlotter::DrawLegend(vector<SHist*> hists)
 {
   // draw a legend  
-
   int narr = hists.size();
   TString title = hists.at(0)->GetDir();
   TString name = hists.at(0)->GetName();
-  
+  TString filename = m_ps_name;
+  b_both=false;
 
-  // cout<<name<<endl;
-  // cout<<m_ps_name<<endl;
-  // if(title.Contains("tagged"))cout <<hists.at(0)->GetName()<<endl;
-  float yfrac = 0.097;
-  if((title.Contains("jet_twodcut")|| title.Contains("muon_twodcut")||title.Contains("topjet_chi2cut"))&& name.Contains("number")) yfrac = 0.08;
-  if (!bPlotRatio) yfrac = 0.05;
-  if(narr==12)  yfrac = 0.03;
-  if(narr==13)   yfrac = 0.05;
-  if(narr==13)  if(title.Contains("jet_chi2cut")) yfrac = 0.055;
-  if(narr==13)  if(title.Contains("chi2min_chi2cut")) yfrac = 0.04;
-  if(name.Contains("M_TPrime_rec3"))yfrac = 0.032;
-  if(name.Contains("MZPrime_TPrime1200ZT_zwtop")||name.Contains("MZPrime_TPrime1200HT_zwtop")||name.Contains("MZPrime_TPrime1200WB_zwnotop")) yfrac = 0.035;
+  //  std::cout<<"title in Draw LEgend  "<<title <<std::endl;
+      std::cout<<std::endl<<"name in Draw LEgend  "<<name <<std::endl;
+  // std::cout<<"filename "<<m_ps_name<<std::endl;
+
+  if(title.Contains("chi2min_reco")||name.Contains("chi2min_reco_Discriminator"))b_both=true;
+  //label for categorisation
+  b_category=10;
+  if(title.Contains("higgs_top_chi2min_chi2cut")||name.Contains("higgs_top_chi2min_chi2cut")||name.Contains("higgstop"))b_category=1;
+  if(title.Contains("higgs_notop_chi2min_chi2cut")||name.Contains("higgs_notop_chi2min_chi2cut")||name.Contains("higgsnotop"))b_category=2;
+  if(title.Contains("one_higgs_top_chi2min_chi2cut")||name.Contains("one_higgs_top_chi2min_chi2cut")||name.Contains("higgstop_one_btag"))b_category=3;
+  if(title.Contains("one_higgs_notop_chi2min_chi2cut")||name.Contains("one_higgs_notop_chi2min_chi2cut")||name.Contains("higgsnotop_one_btag"))b_category=4;
+  if(title.Contains("zw_top_chi2min_chi2cut")||name.Contains("zw_top_chi2min_chi2cut")||name.Contains("zwtop"))b_category=5;
+  if(title.Contains("zw_notop_chi2min_chi2cut")||name.Contains("zw_notop_chi2min_chi2cut")||name.Contains("zwnotop"))b_category=6;
+  b_btag=false;
+  if(title.Contains("jet_chi2cut_btag"))b_btag=true;
+
+  float yfrac = 0.075;
 
   float top = 0.89;
   if (!bPlotRatio && bDrawLumi) top = 0.86;
   if (bSingleEPS){
-    top = 0.915;
-    if (bPlotRatio) top = 0.88;
-    if (bDrawLumi) top = 0.84;
+    top = 0.94;
+    if (bPlotRatio) top = 0.89;
+    if (bDrawLumi) top = 0.89;
   }
-  float ysize = yfrac*narr;
-  float xleft = 0.8;
-  if (bSingleEPS) xleft = 0.61;
-  if((title.Contains("jet_twodcut")||title.Contains("muon_twodcut")||title.Contains("topjet_chi2cut")) && name.Contains("number")&&bSingleEPS) xleft = 0.61;
-  if(narr==13)xleft=0.57;
-  float xright = 0.97;
-  if(title.Contains("higgs_notop_chi2min_chi2cut") && name.Contains("M_TPrime_rec")&&bSingleEPS){ xleft = 0.35;xright = 0.75;}
-  if(narr==13)xright = 0.8;
-  if (!bPortrait){
-    top = 0.99;
-    ysize = 0.07*narr;
-    xleft = 0.72;
-    xright = 0.96;
-  }
-	
+  float ysize = yfrac*5;
+  float xleft = 0.55;
+  if (bSingleEPS) xleft = 0.45;
+  float xright = 0.65;
+
+  // --------- first legend ----------
   TLegend *leg = new TLegend(xleft,top-ysize,xright,top, NULL,"brNDC");
-  if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec"))leg = new TLegend(xleft-0.4,top-ysize+0.01,xright-0.4,top+0.01, NULL,"brNDC");
-  if((title.Contains("twodcut")||title.Contains("chi2cut"))&&name.Contains("number"))leg = new TLegend(xleft,top-ysize+0.07,xright,top+0.07, NULL,"brNDC");
-  if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))leg = new TLegend(xleft,top-ysize+0.01,xright-0.76,top+0.01, NULL,"brNDC");
-  if(title.Contains("higgs_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))leg = new TLegend(xleft+0.05,top-ysize,xright,top, NULL,"brNDC");
-  if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec")&&narr==13)leg = new TLegend(xleft-0.3,top-ysize+0.01,xright-0.3,top+0.01, NULL,"brNDC"); 
-  if(title.Contains("chi2min_chi2cut")&&name.Contains("M_W_gen"))leg = new TLegend(xleft-0.3,top-ysize+0.01,xright-0.3,top+0.01, NULL,"brNDC");
-  if(name.Contains("MZPrime_TPrime1200ZT_zwtop")||name.Contains("MZPrime_TPrime1200HT_zwtop"))leg = new TLegend(xleft-0.4,top-ysize+0.01,xright-0.4,top+0.01, NULL,"brNDC");
-  if(name.Contains("MZPrime_TPrime1200WB_zwnotop"))leg = new TLegend(xleft-0.4,top-ysize+0.05,xright-0.4,top+0.05, NULL,"brNDC");
   leg->SetFillColor(0);
   leg->SetLineColor(1);
   leg->SetBorderSize(0);
   leg->SetTextFont(42);
   leg->SetFillStyle(0);
-  if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec")&&(narr==13||narr==12)){ narr = 6;
-  }else if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec"))narr = 3;
-  if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))narr = 4;
-  if(name.Contains("MZPrime_TPrime1200ZT_zwtop")||name.Contains("MZPrime_TPrime1200HT_zwtop"))narr = 6;
-  if(name.Contains("MZPrime_TPrime1200WB_zwnotop"))narr = 5;
+
   if (bSingleEPS)  leg->SetTextSize(0.056);
-  if(title.Contains("higgs_notop_chi2min_chi2cut") && name.Contains("M_TPrime_rec3")&&bSingleEPS)  leg->SetTextSize(0.045);
-  if(title.Contains("zw_notop_chi2min_chi2cut") && name.Contains("M_TPrime_rec3")&&bSingleEPS)  leg->SetTextSize(0.035);
-  if(title.Contains("higgs_notop_chi2min_chi2cut") && name.Contains("M_TPrime_rec3")&&bSingleEPS)  leg->SetTextSize(0.04);
-  if(narr == 13) leg->SetTextSize(0.045);
-  for (Int_t i=0; i<narr; ++i){
+  //if(narr>10) leg->SetTextSize(0.02);
+
+  for (Int_t i=0; i<4; ++i){
     SHist* sh = hists[i];
     if (sh->IsStack()) continue;
 
@@ -1406,54 +1561,61 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
     } else {
       
       if (sh->IsUsedInStack()){
-	entry = leg->AddEntry(legname, legtitle, "f");
-	entry->SetLineWidth(1);
-	entry->SetLineColor(sh->GetHist()->GetLineColor());
-	entry->SetFillColor(sh->GetHist()->GetLineColor());
-	entry->SetFillStyle(1001);
+	      entry = leg->AddEntry(legname, legtitle, "f");
+	      entry->SetLineWidth(1);
+	      entry->SetLineColor(sh->GetHist()->GetLineColor());
+	      entry->SetFillColor(sh->GetHist()->GetLineColor());
+	      entry->SetFillStyle(1001);
 
       } else {
-	entry = leg->AddEntry(legname, legtitle, "l");
-	entry->SetLineColor(sh->GetHist()->GetLineColor());
-	entry->SetMarkerStyle(0);
-	entry->SetMarkerSize(0);
-	entry->SetMarkerColor(sh->GetHist()->GetLineColor());
-	entry->SetLineWidth(2);
-	entry->SetLineStyle(lstyle);
+	      entry = leg->AddEntry(legname, legtitle, "l");
+	      entry->SetLineColor(sh->GetHist()->GetLineColor());
+	      entry->SetMarkerStyle(0);
+	      entry->SetMarkerSize(0);
+	      entry->SetMarkerColor(sh->GetHist()->GetLineColor());
+	      entry->SetLineWidth(2);
+	      entry->SetLineStyle(lstyle);
       
       }
       entry->SetTextAlign(12);
       //entry->SetTextColor(fSampleColors.At(i));
     }
   }
+  // add box for uncertainty 
+  TLegendEntry* uentry = NULL;
+  TString sunc = "Tot. unc.";
+  if ((name=="MZPrime_topjet_twodcut_mass_subjet_sum") || (name=="MZPrime_jet_twodcut_number") ) {
+    sunc = "Exp. unc.";
+  }
+  uentry = leg->AddEntry("leg_unc", sunc, "f");
+  static Int_t LightGray     = TColor::GetColor( "#aaaaaa" );
+  uentry->SetLineWidth(0);
+  uentry->SetLineColor(kWhite);  
+  uentry->SetFillColor(LightGray);
+  uentry->SetFillStyle(3245);
 
- if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec"))narr = hists.size();
- if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))narr = hists.size();
- if(name.Contains("MZPrime_TPrime1200ZT_zwtop")||name.Contains("MZPrime_TPrime1200HT_zwtop")||name.Contains("MZPrime_TPrime1200WB_zwnotop"))narr=hists.size();
-  // ///////// Test //////////////////////////////
- TLegend *leg2 = new TLegend(xleft+0.08,top-ysize+0.01,xright+0.08,top+0.01, NULL,"brNDC");
- if(narr == 13)leg2 = new TLegend(xleft+0.08,top-ysize+0.01,xright+0.08,top+0.01, NULL,"brNDC");
- if(narr==12 )leg2 = new TLegend(xleft-0.02,top-ysize+0.01,xright-0.13,top+0.01, NULL,"brNDC");
- if(name.Contains("MZPrime_TPrime1200ZT_zwtop")||name.Contains("MZPrime_TPrime1200HT_zwtop")) leg2 = new TLegend(xleft+0.08,top-ysize+0.1,xright+0.08,top+0.01, NULL,"brNDC");
- if(name.Contains("MZPrime_TPrime1200WB_zwnotop")) leg2 = new TLegend(xleft+0.08,top-ysize+0.1,xright+0.08,top+0.05, NULL,"brNDC");
+
+  // --------- second legend ----------
+  ysize = yfrac*3;
+  xleft = 0.65;
+  if (bSingleEPS) xleft = 0.65;
+  xright = 0.90;
+  top -= 0.15;
+  TLegend *leg2 = new TLegend(xleft,top-ysize,xright,top, NULL,"brNDC");
   leg2->SetFillColor(0);
   leg2->SetLineColor(1);
   leg2->SetBorderSize(0);
   leg2->SetTextFont(42);
   leg2->SetFillStyle(0);
-  if (bSingleEPS) leg2->SetTextSize(0.05);
-  if(narr==12) leg2->SetTextSize(0.025);
-  Int_t start=3;
-  if(narr==12)start=6;
-  if(name.Contains("MZPrime_TPrime1200ZT_zwtop")||name.Contains("MZPrime_TPrime1200HT_zwtop")) start=6;
-  if(name.Contains("MZPrime_TPrime1200WB_zwnotop"))start=5;
-  if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))start=4;
-  for (Int_t i=start; i<narr; ++i){
+  if (bSingleEPS)  leg2->SetTextSize(0.056);
+
+  for (Int_t i=4; i<narr-2; ++i){
     SHist* sh = hists[i];
     if (sh->IsStack()) continue;
 
     TString legname = TString::Format("leg_entry_%i",i);
     TString legtitle = sh->GetLegName();
+    //    std::cout<< "legtitle  "<<legtitle <<std::endl;
     TLegendEntry* entry = NULL;
     int marker = sh->GetHist()->GetMarkerStyle();
     int lstyle = sh->GetHist()->GetLineStyle();
@@ -1469,20 +1631,20 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
     } else {
       
       if (sh->IsUsedInStack()){
- 	entry = leg2->AddEntry(legname, legtitle, "f");
- 	entry->SetLineWidth(1);
- 	entry->SetLineColor(sh->GetHist()->GetLineColor());
- 	entry->SetFillColor(sh->GetHist()->GetLineColor());
- 	entry->SetFillStyle(1001);
+ 	      entry = leg2->AddEntry(legname, legtitle, "f");
+ 	      entry->SetLineWidth(1);
+ 	      entry->SetLineColor(sh->GetHist()->GetLineColor());
+ 	      entry->SetFillColor(sh->GetHist()->GetLineColor());
+ 	      entry->SetFillStyle(1001);
 
       } else {
- 	entry = leg2->AddEntry(legname, legtitle, "l");
- 	entry->SetLineColor(sh->GetHist()->GetLineColor());
- 	entry->SetMarkerStyle(0);
- 	entry->SetMarkerSize(0);
- 	entry->SetMarkerColor(sh->GetHist()->GetLineColor());
- 	entry->SetLineWidth(2);
- 	entry->SetLineStyle(lstyle);
+ 	      entry = leg2->AddEntry(legname, legtitle, "l");
+ 	      entry->SetLineColor(sh->GetHist()->GetLineColor());
+ 	      entry->SetMarkerStyle(0);
+ 	      entry->SetMarkerSize(0);
+ 	      entry->SetMarkerColor(sh->GetHist()->GetLineColor());
+ 	      entry->SetLineWidth(2);
+ 	      entry->SetLineStyle(lstyle);
       
       }
       entry->SetTextAlign(12);
@@ -1490,47 +1652,57 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
     }
   }
 
- if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec"))   if(bDrawLegend)  leg2->Draw();
- if(name.Contains("MZPrime_TPrime1200ZT_zwtop")|| name.Contains("MZPrime_TPrime1200HT_zwtop")|| name.Contains("MZPrime_TPrime1200WB_zwnotop")) if(bDrawLegend)  leg2->Draw();
- if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3")) if(bDrawLegend)  leg2->Draw();
- 
-  TPaveText *pt = new TPaveText(.625,.06,.84,.16,"nbNDC");
-  pt->SetFillColor(0);
-  if(title.Contains("zw_top_chi2min_chi2cut")&&name.Contains("M_ZPrime_rec"))pt = new TPaveText(.705,.595,.895,.685,"nbNDC");
-  if(name.Contains("MZPrime_TPrime1200ZT_zwtop") || name.Contains("MZPrime_TPrime1200HT_zwtop")|| name.Contains("MZPrime_TPrime1200WB_zwnotop")) pt = new TPaveText(.705,.495,.895,.585,"nbNDC");
-  if(title.Contains("higgs_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))pt = new TPaveText(.75,.6,.9,.65,"nbNDC");
-  if(title.Contains("zw_notop_chi2min_chi2cut")&&name.Contains("M_TPrime_rec3"))pt = new TPaveText(.75,.6,.9,.65,"nbNDC");
-  if(title.Contains("jet_twodcut") && name.Contains("number"))pt = new TPaveText(.22,.77,.43,.87,"nbNDC");
-  if((title.Contains("topjet_twodcut")||title.Contains("muon_twodcut")) && name.Contains("number"))pt = new TPaveText(.625,.06,.84,.16,"nbNDC");
-  if(m_ps_name.Contains("_ZT"))pt->AddText("T ' #rightarrow Z t");
-  if(m_ps_name.Contains("_HT"))pt->AddText("T ' #rightarrow H t");
-  if(m_ps_name.Contains("_WB"))pt->AddText("T ' #rightarrow W b");
-  if(m_ps_name.Contains("Mixed"))pt->AddText("Z' (M = 2.0 TeV)");
-  if(m_ps_name.Contains("Mixed"))pt->AddText("T' (M = 1.2 TeV)");
-  if((m_ps_name.Contains("_ZT") || m_ps_name.Contains("_HT"))&&!(name.Contains("M_TPrime_rec"))) pt->AddText("M = 1.2 TeV");
-  if(m_ps_name.Contains("_ZT")) pt->SetFillColor(kGreen -10);
-  if(m_ps_name.Contains("_HT"))pt->SetFillColor(kCyan -7);
-  if(m_ps_name.Contains("_WB"))pt->SetFillColor(606);
-  if(m_ps_name.Contains("Mixed")) pt->SetFillColor(921);
-  if(!m_ps_name.Contains("Eff")) if(bDrawLegend)  pt->Draw();
-  // TPaveText *pt = new TPaveText(.75,.5,.92,.6,"nbNDC");
-  // pt->AddText("T ' #rightarrow H t");
-  // pt->AddText("Z' (M = 1.5 TeV)");
-  // pt->SetFillColor(kBlue -7);
-  // if(bDrawLegend)  pt->Draw();
+  if ((name=="MZPrime_topjet_twodcut_mass_subjet_sum") || (name=="MZPrime_jet_twodcut_number") ) {
 
-  // TPaveText *pt = new TPaveText(.75,.6,.92,.65,"nbNDC");
-  // pt->AddText("T'#rightarrow H t");
-  // // pt->AddText("Z' (M = 1.5 TeV)");
-  // //pt->SetFillColor(kGreen -10);
-  // pt->SetFillColor(kBlue -7);
-  // if(bDrawLegend)  pt->Draw();
+  TString sigtext = "M_{Z'} = 1.5 TeV";
+  if (name=="MZPrime_jet_twodcut_number") sigtext = "T #rightarrow H t";
+  TLatex *text = new TLatex(xleft+0.01, top+0.11, sigtext);
+  text->SetNDC();
+  text->SetTextAlign(12);
+  text->SetTextFont(42);
+  text->SetTextSize(0.056);
+  text->Draw();
+
+  TString sigtext2 = "M_{T } = 1.2 TeV";
+  TLatex *text2 = new TLatex(xleft+0.01, top+0.04, sigtext2);
+  text2->SetNDC();
+  text2->SetTextAlign(12);
+  text2->SetTextFont(42);
+  text2->SetTextSize(0.056);
+  text2->Draw();
+
+  } else {
+
+  TString sigtext = "";
+  if(m_ps_name.Contains("_ZT"))sigtext.Append("T #rightarrow Z t");
+  if(m_ps_name.Contains("_HT"))sigtext.Append("T #rightarrow H t");
+  if(m_ps_name.Contains("_WB"))sigtext.Append("T #rightarrow W b");
+  TLatex *text = new TLatex(xleft+0.01, top+0.12, sigtext);
+  text->SetNDC();
+  text->SetTextAlign(12);
+  text->SetTextFont(42);
+  text->SetTextSize(0.056);
+  text->Draw();
+
+  TString sigtext2 = "";
+  if(m_ps_name.Contains("mixed"))sigtext2.Append("M_{Z'} = 1.5 TeV");
+  if(m_ps_name.Contains("mixed"))sigtext2.Append("M_{Z'} = 1.2 TeV");
+  if( (m_ps_name.Contains("_ZT") || m_ps_name.Contains("_HT") || m_ps_name.Contains("_WB") ) &&!(name.Contains("M_TPrime_rec")) &&!(name.Contains("Masse_TPrime"))) sigtext2.Append("M_{T} = 1.2 TeV");
+  TLatex *text2 = new TLatex(xleft+0.01, top+0.05, sigtext2);
+  text2->SetNDC();
+  text2->SetTextAlign(12);
+  text2->SetTextFont(42);
+  text2->SetTextSize(0.056);
+  text2->Draw();
+
+  }
+ 
   ////////////////////////////////////////////
   if(title.Contains("tagged")){
     TPaveText *ptag = new TPaveText(.235,.8,.44,.9,"nbNDC");
     if(title.Contains("higgs_"))ptag = new TPaveText(.55,.8,.7,.9,"nbNDC");
-    if(title.Contains("one_higgs_")) ptag->AddText("H1 tagged");
-    else if(title.Contains("higgs_")) ptag->AddText("H tagged");
+    if(title.Contains("one_higgs_")) ptag->AddText("H_{1b} tagged");
+    else if(title.Contains("higgs_")) ptag->AddText("H_{2b} tagged");
     else if(title.Contains("zw_")) ptag->AddText("Z/W tagged");
     else ptag->AddText("tagged");
     ptag->SetFillColor(0);
@@ -1539,8 +1711,8 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
   }
 
   if(title.Contains("other")){
-    TPaveText *ptag = new TPaveText(.25,.8,.44,.9,"nbNDC");
-    ptag->AddText("untagged");
+    TPaveText *ptag = new TPaveText(.40,.8,.59,.9,"nbNDC");
+    ptag->AddText("additional AK8 jets");
     ptag->SetFillColor(0);
     ptag->SetTextSize(0.08);
     ptag->Draw();
@@ -1554,13 +1726,47 @@ void SPlotter::DrawLegend(vector<SHist*> hists)
     ptag->Draw();
   }
 
-  if(bDrawLegend)  leg->Draw();
+  if(m_ps_name.Contains("paper")&&(title.Contains("neutral")||title.Contains("not_charged"))){
+    if(title.Contains("pu")) leg->SetHeader("Neutral Particles (PU)");
+    else if(title.Contains("pv")) leg->SetHeader("Neutral Particles (PV)");
+    else if(title.Contains("forward"))leg->SetHeader("Neutral Particles (f)");
+    else if(title.Contains("central"))leg->SetHeader("Neutral Particles (c)");
+    else  leg->SetHeader("Neutral Particles");
+  }  else if(m_ps_name.Contains("paper")&& title.Contains("charged")){
+    if(title.Contains("pu")) leg->SetHeader("Charged Particles (PU)");
+    else if(title.Contains("pv")) leg->SetHeader("Charged Particles (PV)");
+    else  leg->SetHeader("Charged Particles");
+  }
+  
+  if(bDrawLegend){  
+    leg->Draw();
+    leg2->Draw();
+  }
 
 }
-
+void SPlotter::DrawInfoText(TString title, TString name)
+{  
+  TString infotext2;
+  infotext2 = m_muon;
+  if(name.Contains("muon")) infotext2="#mu channel";
+  if(name.Contains("elec")) infotext2="e channel";
+  TLatex *text4 = new TLatex(3.5, 24, infotext2);
+  text4->SetNDC();
+  text4->SetTextAlign(13);
+  text4->SetX(0.19);
+  text4->SetTextFont(42);
+  if (bPlotRatio){ 
+    text4->SetTextSize(0.06);
+    text4->SetY(1.);
+  } else {
+    text4->SetTextSize(0.045);
+    text4->SetY(1.);
+  }
+  text4->Draw();
+}
 
 void SPlotter::DrawLumi()
-{
+{  
   TString infotext = TString::Format("%3.1f fb^{-1} (13 TeV)", m_lumi);
   TLatex *text1 = new TLatex(3.5, 24, infotext);
   text1->SetNDC();
@@ -1575,6 +1781,81 @@ void SPlotter::DrawLumi()
     text1->SetY(1.);
   }
   text1->Draw();
+
+// TString infotext2;
+//   infotext2 =TString::Format(m_muon);
+//   TLatex *text4 = new TLatex(3.5, 24, infotext2);
+//   text4->SetNDC();
+//   text4->SetTextAlign(33);
+//   text4->SetX(0.35);
+//   text4->SetTextFont(42);
+//   if (bPlotRatio){ 
+//     text4->SetTextSize(0.06);
+//     text4->SetY(1.);
+//   } else {
+//     text4->SetTextSize(0.045);
+//     text4->SetY(1.);
+//   }
+//   text4->Draw();
+
+  if(b_both){
+    TString infotext3;
+    infotext3 = TString::Format("both categories");
+    TLatex *text5 = new TLatex(3.5, 24, infotext3);
+    text5->SetNDC();
+    text5->SetTextAlign(33);
+    text5->SetX(0.65);
+    text5->SetTextFont(42);
+    if (bPlotRatio){ 
+      text5->SetTextSize(0.06);
+      text5->SetY(1.);
+    } else {
+      text5->SetTextSize(0.045);
+      text5->SetY(1.);
+    }
+    text5->Draw();
+  }
+  if(b_btag){
+    TString infotext8;
+    infotext8 = TString::Format("medium btag");
+    TLatex *text8 = new TLatex(3.5, 24, infotext8);
+    text8->SetNDC();
+    text8->SetTextAlign(33);
+    text8->SetX(0.65);
+    text8->SetTextFont(42);
+    if (bPlotRatio){ 
+      text8->SetTextSize(0.06);
+      text8->SetY(1.);
+    } else {
+      text8->SetTextSize(0.045);
+      text8->SetY(1.);
+    }
+    text8->Draw();
+  }
+
+  
+  if(b_category){
+    TString infotext4= TString::Format(" ");
+    if(b_category==1)  infotext4 = TString::Format("H_{2b }+_{ }t tag");
+    if(b_category==2)  infotext4 = TString::Format("H_{2b }+_{ }no t tag");
+    if(b_category==3)  infotext4 = TString::Format("H_{1b }+_{ }t tag");
+    if(b_category==4)  infotext4 = TString::Format("H_{1b }+_{ }no t tag");
+    if(b_category==5)  infotext4 = TString::Format("Z/W_{}+_{ }t tag");
+    if(b_category==6)  infotext4 = TString::Format("Z/W_{}+_{ }no t tag");
+    TLatex *text6 = new TLatex(3.5, 24, infotext4);
+    text6->SetNDC();
+    text6->SetTextAlign(33);
+    text6->SetX(0.6);
+    text6->SetTextFont(42);
+    if (bPlotRatio){ 
+      text6->SetTextSize(0.06);
+      text6->SetY(1.);
+    } else {
+      text6->SetTextSize(0.045);
+      text6->SetY(1.);
+    }
+    text6->Draw();
+  }
 
   if (bForPublication || bForPrelim){
     TString cmstext = "CMS";
@@ -1592,7 +1873,7 @@ void SPlotter::DrawLumi()
     }
     text2->Draw();
   }
-
+ 
   if (bForPrelim){
     TString preltext = "Preliminary";
     TLatex *text3 = new TLatex(3.5, 24, preltext);
@@ -1609,7 +1890,7 @@ void SPlotter::DrawLumi()
     }
     text3->Draw();
   }
-  
+   
 }
 
 void SPlotter::DoCosmetics(vector<SHist*> hists)
@@ -1620,7 +1901,7 @@ void SPlotter::DoCosmetics(vector<SHist*> hists)
   for (int i=0; i<nh; ++i){
     SHist* sh = hists[i];
     if (sh->IsStack()) continue;
-    GeneralCosmetics(sh->GetHist());
+    GeneralCosmetics(sh->GetHist(),sh->GetDir());
     if (bPortrait) PortraitCosmetics(sh->GetHist());
     if (!bPortrait) LandscapeCosmetics(sh->GetHist());
     if (bSingleEPS) SingleEPSCosmetics(sh->GetHist());
@@ -1677,7 +1958,7 @@ bool SPlotter::SetMinMax(vector<SHist*> hists)
     double imin = hists[i]->GetMinimum(1e-10);
     if (min>imin){
       if (imin>1e-10){
-	min = imin;
+	      min = imin;
       }
     }
   }
@@ -1690,13 +1971,20 @@ bool SPlotter::SetMinMax(vector<SHist*> hists)
 
   bool islog = false;
   double uscale = 1.2;
+  if(title.Contains("higgs_topjet_chi2cut_tagged")&& name.Contains("mass_subjet_sum")) uscale=2;
+  if( name.Contains("Masse_TPrime")) uscale=2;
+  if(bDrawLegend)   if(name.Contains("MZPrime"))uscale=1.9;
+  if(bDrawLegend)   if(title.Contains("chi2min_chi2cut") && name.Contains("M_ZPrime_rec"))uscale=1.6;
   if (name.Contains("_lxy") || name.Contains("_ly") || bPlotLogy ){
     islog = true;
     uscale = 12.;
     if(bDrawLegend){
-      uscale = 1500.;
-      if(title.Contains("muon_twodcut") && name.Contains("number"))uscale=2;
+      // uscale = 1500.;
+      uscale = 1000.;
+      if((title.Contains("muon_twodcut")||title.Contains("electron_triangcut")) && name.Contains("number"))uscale=2;
       if(title.Contains("topjet") && name.Contains("number"))uscale=12;
+      if(title.Contains("jet_twodcut") && name.Contains("pt"))uscale=20000;
+      if(title.Contains("topjet_twodcut") && name.Contains("mass_subjet"))uscale=200;
     }
   }
 
@@ -1704,29 +1992,36 @@ bool SPlotter::SetMinMax(vector<SHist*> hists)
     SHist* h = hists[i];
     if (h->IsStack()){ 
       if (!islog){
-	
-	h->GetStack()->SetMinimum(0.0011);
+
+	h->GetStack()->SetMinimum(0.11);
+	if(m_ps_name.Contains("paper")&&name.Contains("pt")) h->GetStack()->SetMinimum(0.00000011);
       } else { 
 	if (min>1e-10){
 	  if (min<0.1){  
 	    
-	    h->GetStack()->SetMinimum(0.04);
+	    h->GetStack()->SetMinimum(0.11);
+	    if(m_ps_name.Contains("paper")&&name.Contains("pt")) h->GetStack()->SetMinimum(0.00000011);
 	  } else {
 	    
 	    h->GetStack()->SetMinimum(min);
+	    if(m_ps_name.Contains("paper")&&name.Contains("pt")) h->GetStack()->SetMinimum(0.00000011);
 	  }
 	}
       }
       h->GetStack()->SetMaximum(uscale*max);
+
     } else {
       if (!islog){ 
-	h->GetHist()->SetMinimum(0.0011);
+	h->GetHist()->SetMinimum(0.11);
+	if(m_ps_name.Contains("paper")&&name.Contains("pt")) h->GetStack()->SetMinimum(0.00000011);
       } else { 
 	if (min>1e-10){
 	  if (min<0.1){
-	    h->GetHist()->SetMinimum(0.04);
+	    h->GetHist()->SetMinimum(0.11);
+	    if(m_ps_name.Contains("paper")&&name.Contains("pt")) h->GetHist()->SetMinimum(0.0000011);
 	  } else {
 	    h->GetHist()->SetMinimum(min);
+	    if(m_ps_name.Contains("paper")&&name.Contains("pt")) h->GetHist()->SetMinimum(0.0000011);
 	  }
 	}
       }
@@ -1761,6 +2056,32 @@ void SPlotter::SetLogAxes(vector<SHist*> hists)
   if (bPlotLogy){
     gPad->SetLogy(1);
   }
+
+  // override by hist name 
+  bool dosetlog = false;
+  cout << "name = " << name << endl;
+  if (name.Contains("MZPrime_zwtop_elec")) dosetlog = true;
+  if (name.Contains("MZPrime_higgstop_muon")) dosetlog = true;
+  if (name.Contains("MZPrime_higgstop_elec")) dosetlog = true;  
+  if (name.Contains("MZPrime_higgsnotop_elec")) dosetlog = true;  
+  if (name.Contains("MZPrime_higgstop_one_btag_muon")) dosetlog = true;  
+  if (name.Contains("MZPrime_higgstop_one_btag_elec")) dosetlog = true;  
+  if (dosetlog){
+    cout << "Log y = true" << endl;
+    gPad->SetLogy(1);
+    for (unsigned int i=0; i<hists.size(); ++i){
+      SHist* h = hists[i];
+      if (h->IsStack()){ 
+        h->GetStack()->SetMinimum(0.11);
+        h->GetStack()->SetMaximum(hists[i]->GetMaximum() * 2000.);
+        if (name.Contains("MZPrime_higgstop_elec")) h->GetStack()->SetMinimum(0.011);
+      } else {
+        h->GetHist()->SetMinimum(0.11);
+        h->GetHist()->SetMaximum(hists[i]->GetMaximum() * 2000.);      
+        if (name.Contains("MZPrime_higgstop_elec")) h->GetHist()->SetMinimum(0.011);
+      }
+    }
+  }  
 
   return;
 }
@@ -1887,7 +2208,7 @@ void SPlotter::DrawPageNum()
   
 }
 
-void SPlotter::GeneralCosmetics(TH1* hist)
+void SPlotter::GeneralCosmetics(TH1* hist,TString dirname)
 { 
   
   // set Y-axis title
@@ -1897,21 +2218,33 @@ void SPlotter::GeneralCosmetics(TH1* hist)
   hist->GetXaxis()->SetTitle(hist->GetTitle()); 
   TString name = hist->GetTitle();
   //  cout<<name<<endl;
-  if(name.Contains("M_{ZPrime}")) hist->GetXaxis()->SetTitle("M_{Z'}^{rec} [GeV/c^{2}]");
-  if(name.Contains("M_{TPrime}")) hist->GetXaxis()->SetTitle("M_{T'}^{rec} [GeV/c^{2}]");
-  if(name.Contains("mass of reco W Boson")) hist->GetXaxis()->SetTitle("M_{W}^{rec} [GeV/c^{2}]");
+  if(name.Contains("MZPrime_side2_btag"))hist->GetXaxis()->SetTitle("M_{Z'}^{rec} [GeV]");
+  if(name.Contains("M_{ZPrime}")) hist->GetXaxis()->SetTitle("M_{Z'}^{rec} [GeV]");
+  if(name.Contains("M_{TPrime}")) hist->GetXaxis()->SetTitle("M_{T'}^{rec} [GeV]");
+  if(name.Contains("mass of reco W Boson")) hist->GetXaxis()->SetTitle("M_{W}^{rec} [GeV]");
   if(name.Contains("number of jets")) hist->GetXaxis()->SetTitle("number of AK4 jets");
   if(name.Contains("number of topjets")) hist->GetXaxis()->SetTitle("number of AK8 jets");
-  if(name.Contains("p_{T} first jet")) hist->GetXaxis()->SetTitle("p_{T} first AK4 jet [GeV/c]");
+  if(name.Contains("p_{T} first jet")) hist->GetXaxis()->SetTitle("p_{T} first AK4 jet [GeV]");
  if(name.Contains("#eta topjet")) hist->GetXaxis()->SetTitle("#eta AK8 jet");
-  if(name.Contains("p_{T} jet")) hist->GetXaxis()->SetTitle("p_{T} AK4 jet [GeV/c]");
-  if(name.Contains("p_{T} muon")) hist->GetXaxis()->SetTitle("p_{T} muon [GeV/c]");
-  if(name.Contains("p_{T} first topjet")) hist->GetXaxis()->SetTitle("p_{T} first AK8 jet [GeV/c]");
-  if(name.Contains("p_{T} second jet")) hist->GetXaxis()->SetTitle("p_{T} second AK4 jet [GeV/c]");
+  if(name.Contains("p_{T} jet")) hist->GetXaxis()->SetTitle("p_{T} AK4 jet [GeV]");
+  if(name.Contains("#eta first jet")) hist->GetXaxis()->SetTitle("#eta first AK4 jet");
+  if(name.Contains("p_{T} muon")) hist->GetXaxis()->SetTitle("p_{T} muon [GeV]");
+  if(name.Contains("p_{T} first topjet")) hist->GetXaxis()->SetTitle("p_{T} first AK8 jet [GeV]");
+  if(name.Contains("p_{T} second jet")) hist->GetXaxis()->SetTitle("p_{T} second AK4 jet [GeV]");
   if(name.Contains("Number of btagged Jets")) hist->GetXaxis()->SetTitle("number of b tagged AK4 jets");
   if(name.Contains("p_{T} topjet")) hist->GetXaxis()->SetTitle("p_{T} AK8 jet [GeV/c]");
-  if(name.Contains("M^{ topjet}_{subjet sum} [GeV/c^{2}]")) hist->GetXaxis()->SetTitle("M_{AK8}^{SD} [GeV/c^{2}]");
+  if(name.Contains("M^{ topjet}_{subjet sum} [GeV/c^{2}]")) hist->GetXaxis()->SetTitle("M_{AK8}^{SD} [GeV]");
   if(name.Contains("csv-disriminator subjet")) hist->GetXaxis()->SetTitle("csv-discriminator subjet");
+  if(name.Contains("Masse_{ZPrime}")) hist->GetXaxis()->SetTitle("M_{Z'}^{gen} [GeV]");
+  if(name.Contains("Masse_{TPrime}")) hist->GetXaxis()->SetTitle("M_{T'}^{gen} [GeV]");
+  //xaxis names
+  if(dirname.Contains("alpha_p") && name.Contains("pt")) hist->GetXaxis()->SetTitle("all particle p_{T} [GeV] ");
+  if(dirname.Contains("charged_pu") && name.Contains("pt")) hist->GetXaxis()->SetTitle("Charged PU particle p_{T} [GeV] ");
+  if(dirname.Contains("charged_pv") && name.Contains("pt")) hist->GetXaxis()->SetTitle("Charged PV particle p_{T} [GeV] ");
+  if(dirname.Contains("not_charged") && name.Contains("pt")) hist->GetXaxis()->SetTitle("Neutral particle p_{T} [GeV] ");
+  if(dirname.Contains("not_charged_pu") && name.Contains("pt")) hist->GetXaxis()->SetTitle("Neutral PU particle p_{T} [GeV] ");
+  if(dirname.Contains("not_charged_pv") && name.Contains("pt")) hist->GetXaxis()->SetTitle("Neutral PV particle p_{T} [GeV] ");
+  if(((TString)hist->GetXaxis()->GetTitle())=="Alpha - AlphaMed") hist->GetXaxis()->SetTitle("#Chi^{2}");
   hist->GetXaxis()->SetTitleSize(0.5); 
 
   hist->SetTitle("");
@@ -1921,6 +2254,8 @@ void SPlotter::GeneralCosmetics(TH1* hist)
 
   hist->GetXaxis()->SetTitleFont(42);
   hist->GetXaxis()->SetLabelFont(42);
+  //hier
+  hist->GetXaxis()->SetNdivisions(505);
   hist->GetYaxis()->SetTitleFont(42);
   hist->GetYaxis()->SetLabelFont(42);
 
@@ -2024,11 +2359,29 @@ void SPlotter::SingleEPSCosmetics(TH1* hist)
 
 void SPlotter::SingleEPSRatioCosmetics(TH1* hist)
 {
-  TString name = hist->GetTitle();
+
+  TString name = hist->GetName();
+
   // hist->GetYaxis()->SetRangeUser(0.05, 1.95); //general
   // hist->GetYaxis()->SetRangeUser(0.005, 4.5); //ZT zwtop&htop
   // hist->GetYaxis()->SetRangeUser(0.005, 3.8); //ZT notop
- hist->GetYaxis()->SetRangeUser(0.4, 1.6); //WB 
+  //  hist->GetYaxis()->SetRangeUser(0, 2.1); //WB 
+  //  hist->GetYaxis()->SetRangeUser(0.00, 2.45); //WB 
+    hist->GetYaxis()->SetRangeUser(0.00, 2.00); //RK
+    if (name=="MZPrime_topjet_twodcut_mass_subjet_sum"){
+      cout << "setting range!" << endl;
+      hist->GetYaxis()->SetRangeUser(0.6, 1.4); //RK
+    }
+
+    if (name=="MZPrime_jet_twodcut_number"){
+      cout << "setting range!" << endl;
+      hist->GetYaxis()->SetRangeUser(0.6, 1.4); //RK
+    }
+
+
+    if(m_ps_name.Contains("paper")&&(name=="pt")) {
+      hist->GetYaxis()->SetRangeUser(0.05, 4.7);
+    }
   hist->SetMarkerSize(0.7);
   hist->GetXaxis()->SetNdivisions(505);
   // cosmetics for portrait mode 
@@ -2036,7 +2389,7 @@ void SPlotter::SingleEPSRatioCosmetics(TH1* hist)
     hist->SetTitle("");
     
     // x-axis
-    hist->GetXaxis()->SetLabelSize(0.11);
+    hist->GetXaxis()->SetLabelSize(0.12);
     hist->GetXaxis()->SetTickLength(0.08);
     hist->GetXaxis()->SetTitleSize(0.16);
     hist->GetXaxis()->SetTitleOffset(0.9);
@@ -2046,7 +2399,7 @@ void SPlotter::SingleEPSRatioCosmetics(TH1* hist)
     hist->GetYaxis()->CenterTitle();
     hist->GetYaxis()->SetTitleSize(0.12);
     hist->GetYaxis()->SetTitleOffset(0.66);
-    hist->GetYaxis()->SetLabelSize(0.11);
+    hist->GetYaxis()->SetLabelSize(0.12);
     //hist->GetYaxis()->SetNdivisions(210);
     hist->GetYaxis()->SetNdivisions(505);
     hist->GetYaxis()->SetTickLength(0.02);
@@ -2119,8 +2472,8 @@ void SPlotter::LandscapeCosmetics(TH1* hist)
 void SPlotter::RatioCosmetics(TH1* hist)
 {
   
-  hist->GetYaxis()->SetRangeUser(0.3, 1.7);
-  //hist->GetYaxis()->SetRangeUser(0.05, 1.95);
+  //  hist->GetYaxis()->SetRangeUser(0.3, 1.7);
+  hist->GetYaxis()->SetRangeUser(0.05, 1.95);
   hist->SetMarkerSize(0.7);
 
   // cosmetics for portrait mode 

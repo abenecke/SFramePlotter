@@ -28,6 +28,7 @@ SteerPlotter::SteerPlotter()
    bPlotThetaFile = false;
    bLogy = false;
    bZScoreInRatio = false;
+   bmuon="default";
 }
 
 SteerPlotter::~SteerPlotter()
@@ -174,6 +175,11 @@ Bool_t SteerPlotter::GetForPrelim(){return bForPrelim;}
 
 void SteerPlotter::SetForPublication(Bool_t flag){bForPublication = flag;}
 Bool_t SteerPlotter::GetForPublication(){return bForPublication;}
+
+void SteerPlotter::Setmuon(const char* in){bmuon = in;}
+const char* SteerPlotter::Getmuon(){return bmuon.Data();}
+// void SteerPlotter::Setmuon(TString in){bmuon = in;}
+// TString SteerPlotter::Getmuon(){return bmuon;}
 
 void SteerPlotter::SetDrawLegend(Bool_t flag){bDrawLegend = flag;}
 Bool_t SteerPlotter::GetDrawLegend(){return bDrawLegend;}

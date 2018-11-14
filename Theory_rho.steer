@@ -1,0 +1,42 @@
+SteerPlotter(){
+  
+
+  fCycleName     = "/afs/desy.de/user/a/abenecke/madanalysis5/rho/Output/";      
+ fInputFiles    = "rho_HT.root, rho_ZT.root, rho_WB.root";
+ fSampleNames   = " T'_#rightarrow_Ht, T'_#rightarrow_Zt, T'_#rightarrow_Wb";
+ fSamplesWeight = " 1.0,	1.0,     1.0";             
+ fSamplesUnc    = " 0.0,	0.0,     0.0";              
+ fHistColors    = " 600,	416,	 632";                
+ fHistMarkers   = " 0,		0,	 0";                // histogram markers (0=line, -1=dashed line, 24=open circle...)
+
+  fOutputPsFile = "/afs/desy.de/user/a/abenecke/madanalysis5/rho/Output/eps/rho.ps";
+  
+  bRatioPlot = false;  
+  bDrawLumi = false;
+  bShapeNorm = true;   
+  bPortrait = true;    
+  bDrawEntries = false; 
+  bFitPtBalanceHists = false; 
+  bJetShapesPerSlice = false; 
+  bSingleEPS = true;
+  bDrawLegend = true;
+  bLogy = flase;
+  fLumi = 35.87 ;
+  fSysError = 0.026;
+  bForPrelim = false;
+  bForPublication = false;
+}
+
+
+// Colors from ROOT:
+// num EColor { kWhite =0,   kBlack =1,   kGray=920
+//             ,kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432
+//             ,kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900};
+//
+// default QCD   = 867 -> lighter version of Azure
+// default ttbar = 810 -> dark version of Orange (rather red)
+
+//  fInputFiles    = "DATA.DATA.root, MC.TTbar*.root, MC.W*Jets.root,  MC.SingleTop*ch.root, MC.DY*.root, MC.ZP2000w200.root, MC.ZP2000w20.root "; // name of the input files (second part)
+// fSamplesToStack = "TTbar,  WJets, SingleTop, DY"; // the names of chains which you would like to stack (same as in input filenames)
+
+

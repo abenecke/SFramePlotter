@@ -18,7 +18,7 @@ FileParser::FileParser()
   m_file = NULL;
   m_hists = NULL;
   m_shapeSys = NULL;
-  debug = false;
+  debug = true;
   m_do_cumulative = true;
 }
 
@@ -72,6 +72,7 @@ void FileParser::OpenFile(TString fname, TString cyclename)
     Prefix.Append(".");
     fname.Prepend(Prefix);
   }  
+
 
   // check if name consists of a wildcard, if so use hadd to combine histograms
   if (fname.Contains("*")){
@@ -169,7 +170,7 @@ void FileParser::OpenThetaFile(TString cyclename)
     exit(EXIT_FAILURE);
   } else { // success!
     cout << "FileParser: Successfully opened file " << fname << endl;
-  }
+ }
 
   StoreProcessName(fname);
 
@@ -232,10 +233,10 @@ void FileParser::BrowseFile()
 
     TString dirname = ((TObjString*)dirs->At(i))->GetString();
     if (debug) cout << "Getting all histograms from directory " << dirname << endl;
-
+    //  std::cout <<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$   "<<dirname<<"  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"<<std::endl;
     m_file->cd();
     gDirectory->Cd(dirname);
-
+    //  std::cout<<"Hier"<<std::endl;
     // loop over all histograms in the directory and store them
     TKey *key;
     TIter nextkey( gDirectory->GetListOfKeys() );
@@ -248,6 +249,24 @@ void FileParser::BrowseFile()
 	// histogram found
 	TH1* thist = (TH1*) obj;
 	if (m_do_cumulative) MakeCumulativeHist(thist);
+	TString name(thist->GetName());
+
+	//	std::cout<<"Hier1                            "<<name<<std::endl;
+	//	if(name.Contains("partonWPt")) continue;
+	// if(name.Contains("weights")) continue;
+	// if(!name.Contains("Discriminator")) continue;
+	//	if(!(dirname.Contains("twodcut")))continue;
+	// if(name!="tau21") continue;
+	//if(!dirname.Contains("pu"))continue;
+	// //AN plots
+	// if(!( (dirname.Contains("muon_twodcut") && (name=="pt" || name=="eta")) || (dirname.Contains("electron_twodcut") && (name=="pt" || name=="eta")) ||(dirname.Contains("jet_twodcut") && (name=="pt_jet" || name=="eta"))||(dirname.Contains("topjet_twodcut") && (name=="pt_1" || name=="eta_1"))  || (dirname.Contains("event_twodcut") && name=="MET") || (dirname.Contains("chi2min_reco") && name=="Discriminator") || ((dirname.Contains("chi2min_btag0")||dirname.Contains("chi2min_btag1")) && name=="M_ZPrime_rec"))) continue;
+	//Paper plots
+	//	if(!( (dirname.Contains("chi2min_reco") && name=="Discriminator") || ((dirname.Contains("chi2min_btag0")||dirname.Contains("chi2min_btag1")) && name=="M_ZPrime_rec"))) continue;
+	//	if(!( (dirname.Contains("chi2min_chi2cut") && name=="M_ZPrime_rec")))continue;
+	//if(!(dirname.Contains("topjet_btag1"))) continue;
+		if(!(dirname.Contains("chi2min_btag1") && name.Contains("Pt"))) continue;
+
+
 	TH1* rebinned = Rebin(thist, dirname);
 	SHist* shist = NULL;
 	if (rebinned){
@@ -255,6 +274,7 @@ void FileParser::BrowseFile()
 	} else {
 	  shist = new SHist(thist);
 	}
+   
 	shist->SetProcessName(m_process);
 	if (dirname==""){
 	  shist->SetDir("Main");
@@ -266,6 +286,7 @@ void FileParser::BrowseFile()
 	m_hists->Add(shist);	
       }
       
+   
       delete obj;
 
     }
@@ -317,7 +338,7 @@ void FileParser::BrowseThetaFile(TString sample)
 	SetProcessName(proc_name);
 	TString hname = ((TObjString*)pieces->At(0))->GetString();
 	shist->SetName(hname);
-	  
+
 	shist->SetDir("Main");
 	
 	if (pieces->GetEntries()>2){
@@ -365,7 +386,7 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
   TString name(hist->GetName());
   TString title(hist->GetTitle());
   
-  // cout << "name = " << name << " title = " << title <<" dirname= "<<dirname<< endl;
+  //  cout << "name = " << name << " title = " << title <<" dirname= "<<dirname<< endl;
   if (name.CompareTo("toptags")==0){// && dirname.Contains("cutflow6") && title.Contains("electron")){
    
     Double_t binsx[] = {0, 960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1860, 1920, 1980, 2040, 2100, 2400, 3000};
@@ -378,8 +399,7 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     
     TH1* rebinned = hist->Rebin(2);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
-    return rebinned;
-
+    return rebinned; 
   } else if (name.BeginsWith("mu_0top1btag_mttbar")) {
     
     TH1* rebinned = hist->Rebin(2);
@@ -408,46 +428,59 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     
     TH1* rebinned = hist->Rebin(4);
     rebinned->GetXaxis()->SetRangeUser(0,3500);
-    return rebinned;
+    return rebinned; 
+  } else if (name.Contains("Masse_ZPrime")) {
+   
+    hist->GetXaxis()->SetRangeUser(1000,5000);
+    return hist; 
+  } else if (name.Contains("Masse_TPrime")) {
+   
+    hist->GetXaxis()->SetRangeUser(500,3000);
+    return hist;
   // }   else if (title.Contains("p_{T} muon")) {
-    // if(dirname.Contains("twodcut")){
-    //   // Double_t bins[24]={0,53,73,93,113,133,153,173,193,213,233,253,273,293,313,333,353,373,393,413,433,453,473,493};
-    //   TH1* rebinned = hist->Rebin(23,"rebinned",bins);
-    //   return rebinned;
-    // }else{
-    // TH1* rebinned = hist->Rebin(2);
-    // return rebinned;
-      // }
-  }else if (title.Contains("eta muon")) {
-      TH1* rebinned = hist->Rebin(4);
-      return rebinned;
-  } else if (title.Contains("p_{T} second jet")) {
+  //   TH1* rebinned = hist->Rebin(5);
+  //   return rebinned;
+    
+  // }else if (title.Contains("eta muon")||title.Contains("eta electron")||title.Contains("eta first jet")||title.Contains("p_{T} electron")||title.Contains("p_{T} muon")) {
+  //   TH1* rebinned = hist->Rebin(5);
+  //   return rebinned;  
+  // } else if (title.Contains("p_{T} second jet")) {
 
-    TH1* rebinned = hist->Rebin(1);
-    if(dirname.Contains("twodcut"))  rebinned = hist->Rebin(2);
-    rebinned->GetXaxis()->SetRangeUser(0,600);
-    if(dirname.Contains("chi2cut_btag")) rebinned->GetXaxis()->SetRangeUser(0,400);
-    return rebinned; 
-  }else if (title.Contains("p_{T} first jet")) {
+  //   TH1* rebinned = hist->Rebin(1);
+  //   if(dirname.Contains("twodcut"))  rebinned = hist->Rebin(2);
+  //   if(dirname.Contains("twodcut"))  rebinned->GetXaxis()->SetRangeUser(0,600);
+  //   if(dirname.Contains("chi2cut_btag")) rebinned->GetXaxis()->SetRangeUser(0,400);
+  //   return rebinned; 
+  // }else if (title.Contains("p_{T} first jet")) {
 
-    TH1* rebinned = hist->Rebin(1);
-    if(dirname.Contains("chi2cut_btag")) rebinned->GetXaxis()->SetRangeUser(0,700);
-    return rebinned; 
-  } else if (title.Contains("p_{T} topjet")) {
+  //   TH1* rebinned = hist->Rebin(1);
+  //   if(dirname.Contains("chi2cut_btag")) rebinned->GetXaxis()->SetRangeUser(0,700);
+  //   return rebinned; 
+  // // } else if (title.Contains("p_{T} topjet")) {
 
-    TH1* rebinned = hist->Rebin(1);
-    if(dirname.Contains("chi2cut_W")) rebinned->GetXaxis()->SetRangeUser(0,1100);
-    return rebinned; 
-  }else if (title.Contains("p_{T} jet")) {
+  // //   TH1* rebinned = hist->Rebin(1);
+  // //   if(dirname.Contains("chi2cut_W")) rebinned->GetXaxis()->SetRangeUser(0,1100);
+  // //   return rebinned;
+  // // } else if (title.Contains("p_{T} first topjet")) {
 
-    TH1* rebinned = hist->Rebin(1);
-    if(dirname.Contains("twodcut"))  rebinned = hist->Rebin(2);
-    return rebinned; 
+  // //   TH1* rebinned = hist->Rebin(2);
+  // //   return rebinned; 
+  // // }else if (title.Contains("p_{T} jet")) {
 
-  }  else if (!(title.CompareTo("M_{ZPrime}^{rec} [GeV/c^{2}]"))) {
+  // //   // Double_t bin[23]={20, 79.2, 138.4, 197.6, 256.8, 316, 375.2, 434.4, 493.6, 552.8, 612, 671.2, 730.4, 789.6, 848.8, 908, 1026.4,  1144.8, 1204,  1263.2, 1322.4, 1381.6, 1440.8};
+  // //   // name.Append("_rebin");
+  // //   // TH1* rebinned = hist->Rebin(22, name, bin);
+  // //   TH1* rebinned = hist->Rebin(2);
+  // //   //  TH1* rebinned = hist->Rebin(22,"rebinned",bin);
+  // //   // if(dirname.Contains("twodcut"))  rebinned = hist->Rebin(22,"rebinned",bin);
+  // //   // if(dirname.Contains("triangcut"))  rebinned = hist->Rebin(2);
+   
+  // //   return rebinned; 
+
+  // }  else if (!(title.CompareTo("M_{ZPrime}^{rec} [GeV/c^{2}]"))) {
  
-    TH1* rebinned = hist->Rebin(2);
-    return rebinned;
+  //   TH1* rebinned = hist->Rebin(2);
+  //   return rebinned;
   }  else if (!(title.CompareTo("M_{TPrime}^{rec} [GeV/c^{2}]"))) {
  
     TH1* rebinned = hist->Rebin(2);
@@ -456,6 +489,7 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     
     hist->GetXaxis()->SetRangeUser(0,10);
     if(dirname.Contains("twodcut")) hist->GetXaxis()->SetRangeUser(0,30);
+    if(dirname.Contains("triangcut")) hist->GetXaxis()->SetRangeUser(0,30);
     return hist;
   } else if (title.Contains("number of topjets")) {
     
@@ -469,35 +503,149 @@ TH1* FileParser::Rebin(TH1* hist, TString dirname)
     
     hist->GetXaxis()->SetRangeUser(50,130);
     return hist;
-  } else if (!title.CompareTo("#Chi^{2}")) {
+    // } else if (dirname.Contains("muon_chi2cut")&&name.Contains("eta")) {
     
-    TH1* rebinned = hist->Rebin(2);
-    return rebinned;
+    //   hist->GetXaxis()->SetRangeUser(-3,5);
+    //   return hist;
+  // } else if (!title.CompareTo("#Chi^{2}")) {
     
-  } else if (title.Contains("missing E")) {
+  //   TH1* rebinned = hist->Rebin(5);
+  //   return rebinned;
     
-    TH1* rebinned = hist->Rebin(4);
-    return rebinned;
-  } else if (dirname.Contains("topjet_twodcut") &&name.Contains("mass_subjet_sum")) {
+  // } else if (title.Contains("missing E")) {
     
-    TH1* rebinned = hist->Rebin(4);
-    return rebinned;
+  //   TH1* rebinned = hist->Rebin(10);
+  //   return rebinned;
+  // //
+    //  } else if ((dirname.Contains("topjet_twodcut") ||dirname.Contains("topjet_triangcut") )&&name.Contains("mass_subjet_sum")) {
+    
+  //   TH1* rebinned = hist->Rebin(4);
+  //   return rebinned;
   } else if (dirname.Contains("topjet_chi2cut_other") &&name.Contains("mass_subjet_sum")) {
     
     TH1* rebinned = hist->Rebin(2);
     return rebinned;
 
+  } else if (dirname.Contains("electron_twodcut") &&name.Contains("isolation")) {
+    
+    TH1* rebinned = hist->Rebin(4);
+    return rebinned;
+
+  } else if (dirname.Contains("topjet_twodcut") &&name.Contains("mass_subjet_sum")) {
+    
+    TH1* rebinned = hist->Rebin(4);
+    return rebinned;
+
+  } else if (dirname.Contains("topjet_topjet2") &&name.Contains("eta")) {
+    
+    TH1* rebinned = hist->Rebin(4);
+    return rebinned;
+    
   } else if (dirname.Contains("tagger_chi2cut")&&name.Contains("reco_mass_W")) {
     
     TH1* rebinned = hist->Rebin(2);
     return rebinned;
-    
-  } else if (title.Contains("H_{T}")) {
+  } else if (dirname.Contains("tagger_zwtag")&&name.Contains("reco_mass_W")) {
     
     TH1* rebinned = hist->Rebin(2);
+    rebinned->GetXaxis()->SetRangeUser(40,200);
     return rebinned;
+  //   ////puppi
+ //  } else if (title.Contains("H_{T}")) {
+    
+ //    TH1* rebinned = hist->Rebin(4);
+ //    return rebinned; 
 
-  } else {
+ //  } else if (dirname.Contains("alpha_p")&&name.Contains("eta")) {
+    
+ //    TH1* rebinned = hist->Rebin(2);
+ //    return rebinned; 
+   
+ //  } else if (dirname.Contains("p_charged_pu")&&title.Contains("Number of particles")) {
+
+ //    TH1* rebinned = hist->Rebin(15);
+ //    rebinned->GetXaxis()->SetRangeUser(0,800);
+ //    // TH1* rebinned = hist->Rebin(2);//pt1cut
+ //    // rebinned->GetXaxis()->SetRangeUser(0,200); //pt1cut
+ //    return rebinned; 
+
+ //  } else if (dirname.Contains("p_charged_pv")&&title.Contains("Number of particles")) {
+     
+ //    TH1* rebinned = hist->Rebin(15);
+ //    rebinned->GetXaxis()->SetRangeUser(0,400);
+ //    return rebinned; 
+
+ // } else if (dirname.Contains("alpha_p_not_charged")&&title.Contains("Number of particles")) {
+    
+ //    TH1* rebinned = hist->Rebin(30);
+ //    rebinned->GetXaxis()->SetRangeUser(200,1800);
+ //    // rebinned->GetXaxis()->SetRangeUser(0,800); //pt1cut
+ //    return rebinned;  
+
+ //  } else if (title.Contains("Number of particles")) {
+    
+ //    TH1* rebinned = hist->Rebin(30);
+ //     rebinned->GetXaxis()->SetRangeUser(700,3000);
+ //     // rebinned->GetXaxis()->SetRangeUser(0,600);
+ //    return rebinned;
+ //  } else if (dirname.Contains("charged_pu")&& title.Contains("pt")) {
+
+ //    TH1* rebinned = hist->Rebin(1);
+ //    rebinned->GetXaxis()->SetRangeUser(0,30);
+ //    return rebinned;
+
+ //   } else if (title.Contains("pt")) {
+    
+ //     //Double_t bin[23]={20, 79.2, 138.4, 197.6, 256.8, 316, 375.2, 434.4, 493.6, 552.8, 612, 671.2, 730.4, 789.6, 848.8, 908, 1026.4,  1144.8, 1204,  1263.2, 1322.4, 1381.6, 1440.8};
+ //     // name.Append("_rebin");
+ //     // TH1* rebinned = hist->Rebin(22, name, bin);
+
+ //     TH1* rebinned = hist->Rebin(1);
+ //     rebinned->GetXaxis()->SetRangeUser(0,30);
+ //     return rebinned;
+
+ // //    // } else if (dirname.Contains("higgs_topjet_chi2cut_tagged")) {
+    
+ // //    //   hist->SetMaximum()
+ // //    //   return rebinned;
+
+ } else if (title.Contains("#Chi^{2}")) {
+    
+    //TH1* rebinned = hist->Rebin(5);
+    //return rebinned;
+ // // } else if (title.Contains("M^{")) {
+    
+ // //    TH1* rebinned = hist->Rebin(4);
+ // //    return rebinned;
+
+  // } else if(name.Contains("MZPrime_side2_btag")){
+
+  //   Double_t bin[31] = {600.0, 685.0, 770.0, 855.0, 940.0, 1025.0, 1110.0, 1195.0, 1280.0, 1365.0, 1450.0, 1535.0, 1620.0, 1705.0, 1790.0, 1875.0, 1960.0, 2045.0, 2130.0, 2215.0, 2300.0, 2385.0, 2470.0, 2555.0, 2640.0, 2725.0, 2810.0, 2895.0, 2980.0, 3065.0,4000.0};
+  //   name.Append("_rebin");
+  //   TH1* rebinned = hist->Rebin(30, name, bin);
+  //   return rebinned;
+
+  // }else if (name.Contains("higgsnotop_muon")){
+  //   Double_t bin[24]={600.0, 685.0, 770.0, 855.0, 940.0, 1025.0, 1110.0, 1195.0, 1280.0, 1365.0, 1450.0, 1535.0, 1620.0, 1705.0, 1790.0, 1875.0, 1960.0, 2045.0, 2130.0,  2300.0,  2470.0,  2640.0, 2980.0,4000};
+  //   name.Append("_rebin");
+  //   TH1* rebinned = hist->Rebin(23, name, bin);
+  //   return rebinned;
+
+  // hack to fix display with negative weights
+  } else if (name.Contains("MZPrime_higgsnotop_one_btag_elec")) {
+    if (name=="MZPrime_higgsnotop_one_btag_elec__TTbar") hist->SetBinContent(29, 1.24756);
+    if (name=="MZPrime_higgsnotop_one_btag_elec__DYJetsToLL") hist->SetBinContent(29, 0.0567404);    
+    //cout << "name = " << name << endl;
+    //cout << "bin content in bin 29 = " << hist->GetBinContent(29) << endl;
+    return NULL;
+
+  // hack to fix x-axis label
+  } else if (name.Contains("MZPrime_topjet_twodcut_mass_subjet_sum")) {
+    hist->SetTitle("M_{SD} [GeV]");
+    return NULL;
+
+
+  }  else {
     return NULL;
   }
 

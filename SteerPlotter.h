@@ -88,6 +88,11 @@ public:
     void SetForPublication(Bool_t flag);
     Bool_t GetForPublication();
 
+    void Setmuon(const char* in);
+    const char* Getmuon();
+    /* void Setmuon(TString in); */
+    /* TString Getmuon(); */
+
     void SetDrawLegend(Bool_t flag);
     Bool_t GetDrawLegend();
 
@@ -124,6 +129,7 @@ private:
     Bool_t    bDrawLumi;          // draw the lumi information?
     Bool_t    bForPrelim;         // write "CMS Preliminary"
     Bool_t    bForPublication;    // write "CMS"
+    TString    bmuon;    // write "CMS"
     Bool_t    bDrawLegend;        // draw the legend everywhere?
     Bool_t    bFitPtBalanceHists; // fit Pt-balance histograms?
     Bool_t    bJetShapesPerSlice; // plot each slide of the jet shape histograms?

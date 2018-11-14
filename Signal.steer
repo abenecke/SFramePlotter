@@ -1,0 +1,42 @@
+SteerPlotter(){
+  
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     Only Signal MC samples  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  fCycleName     = "/nfs/dust/cms/user/abenecke/ZPrimeTotTPrime/CMSSW_8X/rootfiles/uncertainties/muon/none/uhh2.AnalysisModuleRunner";
+  fInputFiles    = "  MC.MC_ZPrime1500*700*HT.root,      MC.MC_ZPrime1500*900*HT.root,      MC.MC_ZPrime1500*1200*HT.root,   MC.MC_ZPrime2500*1500*HT.root,   ";
+  fSampleNames   = " 		T'(M_=_0.7TeV)_Z'(M_=_1.5TeV),	     		 T'(M_=_0.9TeV)_Z'(M_=_1.5TeV),    	   	      T'(M_=_1.2TeV)_Z'(M_=_1.5TeV),  	 T'(M_=_1.5TeV)_Z'(M_=_2.5TeV) 	 ";
+  fSamplesWeight = " 	1.0,       		     		 1.0,          	      	   	      1.0, 		 1.0,   		";             
+  fSamplesUnc    = " 	0.0,       		     		 0.0,          		  	      0.0,		 0.0 			 ";              
+  fHistColors    = "	600,       		     		 432,          		   	      603,		 1 	";                
+  fHistMarkers   = " 	0,         		     		 0,            		   	      0,		 0 		"; 
+
+ 
+  fOutputPsFile = "plots/signal/HT.ps";
+  
+  bRatioPlot = false;   // plot ratio histograms?
+  bDrawLumi = false;
+  bShapeNorm = true;   // shape normalization? 
+  bPortrait = true;    // portrait or landscape?
+  bDrawEntries = false; // draw the histogram entries?
+  bFitPtBalanceHists = false; // perform fit of pt-balance histograms?
+  bJetShapesPerSlice = false; // Plot JetShapes also slice per slice in r
+  bSingleEPS = true;
+  bDrawLegend = true;
+  bLogy = false;
+  fLumi = 35.87 ;
+  fSysError = 0.026;
+  bForPrelim = false;
+  bForPublication = false;
+  bmuon=trrue;
+}
+
+
+// Colors from ROOT:
+// num EColor { kWhite =0,   kBlack =1,   kGray=920
+//             ,kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432
+//             ,kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900};
+//
+
+
+
